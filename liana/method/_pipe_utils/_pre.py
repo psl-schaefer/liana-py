@@ -4,11 +4,12 @@ Functions to preprocess the anndata object prior to running any method.
 """
 
 import numpy as np
-from anndata import AnnData
 from typing import Optional
-from pandas import DataFrame, Index
+from pandas import DataFrame, Index, Series
+from scipy.sparse import csr_matrix, isspmatrix_csr, hstack
+
+from anndata import AnnData
 import scanpy as sc
-from scipy.sparse import csr_matrix, isspmatrix_csr
 
 
 def assert_covered(
@@ -143,9 +144,6 @@ def prep_check_adata(adata: AnnData,
         raise AssertionError(f"`{groupby}` not found in `adata.obs.columns`.")
     adata.obs.loc[:, 'label'] = adata.obs[groupby]
 
-    # Re-order adata vars alphabetically
-    adata = adata[:, np.sort(adata.var_names)]
-
     # Remove any cell types below X number of cells per cell type
     count_cells = adata.obs.groupby(groupby)[groupby].size().reset_index(name='count').copy()
     count_cells['keep'] = count_cells['count'] >= min_cells
@@ -270,3 +268,36 @@ def _choose_mtx_rep(adata, use_raw=False, layer=None, verbose=False) -> csr_matr
         if verbose:
             print("Using `.X`!")
         return adata.X
+
+
+## TODO this function will become duplicated with the feature branch, move to utils
+def _add_complexes_to_var(adata, resource):
+    """
+    Generate an AnnData object with complexes appended as variables.
+    """
+    
+    complexes = np.union1d(resource['receptor'].astype(str), resource['ligand'].astype(str))
+    complexes = complexes[Series(complexes).str.contains('_')]
+    
+    X = None
+
+    for comp in complexes:
+        subunits = comp.split('_')
+        
+        # keep only complexes, the subunits of which are in var
+        if all([subunit in adata.var.index for subunit in subunits]):
+            adata.var.loc[comp,:] = None
+
+            # create matrix for this complex
+            new_array = csr_matrix(adata[:, subunits].X.min(axis=1))
+
+            if X is None:
+                X = new_array
+            else:
+                X = hstack((X, new_array))
+
+    adata.var
+
+    adata = AnnData(X=hstack((adata.X, X)), obs=adata.obs, var=adata.var)
+    
+    return adata

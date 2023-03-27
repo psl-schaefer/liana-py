@@ -5,6 +5,8 @@ import pandas
 
 from liana.method._pipe_utils import prep_check_adata, assert_covered, filter_resource, \
     filter_reassemble_complexes
+from liana.method._pipe_utils._pre import _add_complexes_to_var
+    
 from ..resource import select_resource, explode_complexes
 from liana.method._pipe_utils._get_mean_perms import _get_means_perms
 from liana.method._pipe_utils._aggregate import _aggregate
@@ -93,7 +95,7 @@ def liana_pipe(adata: anndata.AnnData,
 
     """
     if _key_cols is None:
-        _key_cols = ['source', 'target', 'ligand_complex', 'receptor_complex']
+        _key_cols = ['source', 'target', 'ligand', 'receptor']
 
     if _score is not None:
         _complex_cols, _add_cols = _score.complex_cols, _score.add_cols
@@ -114,6 +116,9 @@ def liana_pipe(adata: anndata.AnnData,
     # initialize mat_mean for sca
     mat_mean = None
     mat_max = None
+    
+    if resource is None:
+        resource = select_resource(resource_name.lower())
 
     # Check and Reformat Mat if needed
     adata = prep_check_adata(adata=adata,
@@ -122,6 +127,10 @@ def liana_pipe(adata: anndata.AnnData,
                              use_raw=use_raw,
                              layer=layer,
                              verbose=verbose)
+    
+    adata = _add_complexes_to_var(adata, resource)
+    # Re-order adata vars alphabetically (NOTE Currently also done in prep_check_adata)
+    adata = adata[:, np.sort(adata.var_names)]
 
     # get mat mean for SCA (before reducing the features)
     if 'mat_mean' in _add_cols:
@@ -132,18 +141,17 @@ def liana_pipe(adata: anndata.AnnData,
         mat_max = np.max(adata.X.data)
         assert isinstance(mat_max, np.float32)
 
-    if resource is None:
-        resource = select_resource(resource_name.lower())
-    # explode complexes/decomplexify
-    resource = explode_complexes(resource)
+    # # explode complexes/decomplexify
+    # resource = explode_complexes(resource)
 
     # Check overlap between resource and adata
     assert_covered(np.union1d(np.unique(resource["ligand"]),
                               np.unique(resource["receptor"])),
                    adata.var_names, verbose=verbose)
 
-    # Filter Resource
-    resource = filter_resource(resource, adata.var_names)
+    # Filter_resource
+    resource = resource[(np.isin(resource['ligand'], adata.var_names)) &
+                        (np.isin(resource['receptor'], adata.var_names))]
 
     if verbose:
         print(f"Generating ligand-receptor stats for {adata.shape[0]} samples "
@@ -165,12 +173,10 @@ def liana_pipe(adata: anndata.AnnData,
     # Mean Sums required for NATMI (note done on subunits also)
     if 'ligand_means_sums' in _add_cols:
         lr_res = _sum_means(lr_res, what='ligand_means',
-                            on=['ligand_complex', 'receptor_complex',
-                                'ligand', 'receptor', 'target'])
+                            on=['ligand', 'receptor', 'target'])
     if 'receptor_means_sums' in _add_cols:
         lr_res = _sum_means(lr_res, what='receptor_means',
-                            on=['ligand_complex', 'receptor_complex',
-                                'ligand', 'receptor', 'source'])
+                            on=['ligand', 'receptor', 'source']) ## NOTE ligand, receptor
 
     # Calculate Score
     if _score is not None:
@@ -212,7 +218,7 @@ def liana_pipe(adata: anndata.AnnData,
         lr_res = filter_reassemble_complexes(lr_res=lr_res,
                                              _key_cols=_key_cols,
                                              expr_prop=expr_prop,
-                                             complex_cols=_complex_cols,
+                                             _complex_cols=_complex_cols,
                                              return_all_lrs=return_all_lrs)
 
     return lr_res
@@ -435,9 +441,10 @@ def _run_method(lr_res: pandas.DataFrame,
     # re-assemble complexes - specific for each method
     lr_res = filter_reassemble_complexes(lr_res=lr_res,
                                          _key_cols=_key_cols,
+                                         _complex_cols=_complex_cols,
                                          expr_prop=expr_prop,
-                                         return_all_lrs=return_all_lrs,
-                                         complex_cols=_complex_cols)
+                                         return_all_lrs=return_all_lrs
+                                         )
 
     _add_cols = _add_cols + ['ligand', 'receptor']
     relevant_cols = reduce(np.union1d, [_key_cols, _complex_cols, _add_cols])

@@ -4078,4 +4078,4 @@ full = ["cell2cell", "corneto", "cvxpy-base", "decoupler", "highspy", "mofapy2",
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "63f65e8740219b8cea5b1ab2d79df8eb9d3e435ce7594f8fbaf597cbfd87ccee"
+content-hash = "01a080f6f063cfa4e120ed7bb03a9baf5acb4cae7629485cbf427e6b8e2a5d5b"

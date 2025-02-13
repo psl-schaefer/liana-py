@@ -1,7 +1,20 @@
 Changelog
 =============
 
+1.5.1 (17.01.2025)
+--------------------------------------------------------
+
+- liana will now require Python >= 3.10
+
+- Removed AnnData upper version restrictions
+
+- Merged PR #163 for numpy2.0 compatibility
+
+- Minor documentation improvements for circle_plot.
+
 1.5.0 (17.01.2025)
+--------------------------------------------------------
+
 - New ``circle_plot`` is now available (Merged #139). Thanks to @WeipengMO.
 
 - Update bivariate metrics to no longer save in place but rather return the AnnData

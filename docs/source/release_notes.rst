@@ -1,6 +1,15 @@
 Changelog
 =============
 
+1.5.0 (17.01.2025)
+- New ``circle_plot`` is now available (Merged #139). Thanks to @WeipengMO.
+
+- Update bivariate metrics to no longer save in place but rather return the AnnData
+
+- Issue related to .A for a csr_matrix after a certain scipy version #155, #135
+
+- Removed inplace paramter from ``li.mt.bivariate`` Related to #147. It will now by default return an AnnData object.
+
 1.4.0 (02.09.2024)
 -------------------------------------------------
 

@@ -8,7 +8,7 @@ Changelog
 
 - Removed AnnData upper version restrictions
 
-- Merged PR #163 for numpy2.0 compatibility
+- Merged PR #161 for numpy2.0 compatibility
 
 - Minor documentation improvements for circle_plot.
 

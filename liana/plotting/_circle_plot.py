@@ -16,7 +16,7 @@ def _pivot_liana_res(
         source_key: str = 'source',
         target_key: str = 'target',
         score_key: str = 'lr_means',
-        mode: Literal['counts', 'weight'] = 'counts') -> pd.DataFrame:
+        mode: Literal['counts', 'mean'] = 'counts') -> pd.DataFrame:
     if mode not in ['counts', 'mean']:
         raise ValueError("`pivot_mode` must be 'counts' or 'mean'!")
     if mode == 'counts':
@@ -111,7 +111,7 @@ def circle_plot(
         target_labels: Union[list, str] = None,
         ligand_complex: list | str | None = None,
         receptor_complex: list | str | None = None,
-        pivot_mode: Literal['counts', 'weight'] = 'counts',
+        pivot_mode: Literal['counts', 'mean'] = 'counts',
         mask_mode: Literal['and', 'or'] = 'or',
         figure_size: tuple = (5, 5),
         edge_alpha: float = .5,

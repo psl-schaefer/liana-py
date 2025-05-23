@@ -3,8 +3,10 @@ from numpy import unique
 import pathlib
 from pandas import DataFrame
 
+from liana._logging import _logg
+from liana._constants import DefaultValues as V
 
-def select_resource(resource_name: str = 'consensus') -> DataFrame:
+def select_resource(resource_name: str = V.resource_name) -> DataFrame:
     """
     Read resource of choice from the pre-generated resources in LIANA.
 
@@ -21,7 +23,7 @@ def select_resource(resource_name: str = 'consensus') -> DataFrame:
     resource_name = resource_name.lower()
 
     resource_path = pathlib.Path(__file__).parent.joinpath("omni_resource.csv")
-    
+
     resource = read_csv(resource_path, index_col=False)
 
     if resource_name not in resource['resource'].unique():
@@ -58,8 +60,7 @@ def _handle_resource(interactions=None, resource=None, resource_name=None, x_nam
             if resource_name is None:
                 raise ValueError("If 'interactions' and 'resource' are both None, 'resource_name' must be provided.")
             else:
-                if verbose:
-                    print(f"Using resource `{resource_name}`.")
+                _logg(f"Using resource `{resource_name}`.", verbose=verbose)
                 resource = select_resource(resource_name)
         else:
             if verbose:
@@ -68,11 +69,14 @@ def _handle_resource(interactions=None, resource=None, resource_name=None, x_nam
                 raise ValueError("If 'interactions' is None, 'resource' must be a valid DataFrame "
                                  "with columns '{}' and '{}'.".format(x_name, y_name))
             resource = resource.copy()
+            resource = resource.dropna(subset=[x_name, y_name]).drop_duplicates()
+            resource.index = range(len(resource))
+            resource.index.name = None
     else:
-        if verbose:
-            print("Using provided `interactions`.")
+        _logg("Using provided `interactions`.", verbose=verbose)
         if not isinstance(interactions, list) or any(len(item) != 2 for item in interactions):
             raise ValueError("'interactions' should be a list of tuples in the format [(x1, y1), (x2, y2), ...].")
+        interactions = set(interactions)
         resource = DataFrame(interactions, columns=[x_name, y_name])
 
     return resource

@@ -18,7 +18,7 @@ def _connectome_score(x) -> tuple:
     """
     # magnitude
     expr_prod = x['ligand_means'].values * x['receptor_means'].values
-    
+
     # specificity
     scaled_weight = mean((x['ligand_zscores'].values, x['receptor_zscores'].values), axis=0)
     return expr_prod, scaled_weight
@@ -42,5 +42,4 @@ _connectome = MethodMeta(method_name="Connectome",
                                    'reports, 12(1), pp.1-12. '
                          )
 
-# Initialize callable Method instance
 connectome = Method(_method=_connectome)

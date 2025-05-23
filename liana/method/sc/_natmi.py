@@ -8,19 +8,6 @@ def _spec_weight(ligand_means, ligand_means_sums, receptor_means, receptor_means
 
 
 def _natmi_score(x) -> tuple:
-    """
-    Calculate NATMI-like expression product and specificity weights
-
-    Parameters
-    ----------
-    x
-        DataFrame
-
-    Returns
-    -------
-    tuple(expr_prod, spec_weight)
-
-    """
     # magnitude
     expr_prod = x['ligand_means'] * x['receptor_means']
 
@@ -46,6 +33,4 @@ _natmi = MethodMeta(method_name="NATMI",
                               'NATMI. Nature communications, 11(1), pp.1-11. '
                     )
 
-# Initialize callable Method instance
 natmi = Method(_method=_natmi)
-

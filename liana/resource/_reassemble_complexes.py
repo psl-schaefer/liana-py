@@ -4,9 +4,10 @@ Functions to deal with protein complexes
 from __future__ import annotations
 
 import pandas as pd
-import numpy as np
+from liana._logging import _logg
+from liana._docs import d
 
-
+@d.dedent
 def filter_reassemble_complexes(lr_res,
                                 _key_cols,
                                 complex_cols,
@@ -25,11 +26,8 @@ def filter_reassemble_complexes(lr_res,
         ['source', 'target', 'ligand_complex', 'receptor_complex']
     complex_cols
         method/complex-relevant columns
-    expr_prop
-        minimum expression proportion for each subunit in a complex
-    return_all_lrs
-        Bool whether to return all LRs, or only those that surpass the expr_prop
-        threshold. `False` by default.
+    %(expr_prop)s
+    %(return_all_lrs)s
     complex_policy
         approach by which the complexes are reassembled
 
@@ -60,26 +58,25 @@ def filter_reassemble_complexes(lr_res,
 
     # check if complex policy is only min
     aggs = {complex_policy, 'min'}
-    
+
     for col in complex_cols:
-        lr_res = _reduce_complexes(col=col, 
+        lr_res = _reduce_complexes(col=col,
                                    lr_res=lr_res,
                                    key_cols=_key_cols,
                                    aggs=aggs)
-
 
     # check if there are any duplicated subunits
     duplicate_mask = lr_res.duplicated(subset=_key_cols, keep=False)
     if duplicate_mask.any():
         # check if there are any non-equal subunit values
         if not lr_res[duplicate_mask].groupby(_key_cols)[complex_cols].transform(lambda x: x.duplicated(keep=False)).all().all():
-            print('Warning: there were duplicated subunits in the complexes. ' + 
-                  'The subunits were reduced to only the minimum expression subunit. ' +
-                  'However, there were subunits that were not the same within a complex. ')
+            _logg('There were duplicated subunits in the complexes. ' +
+                 'The subunits were reduced to only the minimum expression subunit. ' +
+                 'However, there were subunits that were not the same within a complex. ',
+                 level='warn')
         lr_res = lr_res.drop_duplicates(subset=_key_cols, keep='first')
 
     return lr_res
-
 
 
 def _reduce_complexes(col: str,

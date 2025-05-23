@@ -41,8 +41,7 @@ Local bivariate metrics
 .. autosummary::
    :toctree: api
 
-   liana.method.bivar
-   liana.method.lr_bivar
+   liana.method.bivariate.__call__
 
 
 Learn Spatial Relationships
@@ -98,6 +97,7 @@ Utility functions
    liana.utils.spatial_neighbors
    liana.utils.get_factor_scores
    liana.utils.get_variable_loadings
+   liana.utils.interpolate_adata
 
 Prior knowledge
 ----------------------------------
@@ -108,6 +108,10 @@ Prior knowledge
    liana.resource.select_resource
    liana.resource.show_resources
    liana.resource.generate_lr_geneset
+   liana.resource.explode_complexes
+   liana.resource.get_metalinks
+   liana.resource.describe_metalinks
+   liana.resource.get_metalinks_values
 
 Intracellular
 ----------------------------------
@@ -117,3 +121,4 @@ Intracellular
 
    liana.method.find_causalnet
    liana.method.build_prior_network
+   liana.method.estimate_metalinks

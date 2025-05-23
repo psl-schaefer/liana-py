@@ -10,7 +10,7 @@ from typing import Optional
 from pandas import DataFrame, Index
 import scanpy as sc
 from scipy.sparse import csr_matrix, isspmatrix_csr
-
+from liana._logging import _logg
 
 def assert_covered(
         subset,
@@ -44,9 +44,12 @@ def assert_covered(
 
     subset = np.asarray(subset)
     is_missing = ~np.isin(subset, superset)
-    prop_missing = np.sum(is_missing) / len(subset)
-    x_missing = ", ".join([x for x in subset[is_missing]])
-
+    if subset.size == 0:
+        prop_missing = 1.
+        x_missing = 'values in interactions argument'
+    else:
+        prop_missing = np.sum(is_missing) / len(subset)
+        x_missing = ", ".join([x for x in subset[is_missing]])
     if prop_missing > prop_missing_allowed:
         msg = (
             f"Please check if appropriate organism/ID type was provided! "
@@ -56,16 +59,17 @@ def assert_covered(
         )
         raise ValueError(msg + f" [{x_missing}] missing from {superset_name}")
 
-    if verbose & (prop_missing > 0):
-        print(f"{prop_missing:.2f} of entities in the resource are missing from the data.")
+    _logg(f"{prop_missing:.2f} of entities in the resource are missing from the data.", verbose=verbose & (prop_missing > 0))
 
 
 def prep_check_adata(adata: AnnData,
                      groupby: (str | None),
                      min_cells: (int | None),
+                     groupby_subset: (np.array | None) = None,
                      use_raw: Optional[bool] = False,
                      layer: Optional[str] = None,
                      obsm = None,
+                     uns = None,
                      complex_sep='_',
                      verbose: Optional[bool] = False) -> AnnData:
     """
@@ -101,11 +105,16 @@ def prep_check_adata(adata: AnnData,
     else:
         var = DataFrame(index=adata.var_names)
 
+    if obsm is not None:
+        # discard any instances of AnnData if in obsm
+        obsm = {k: v for k, v in obsm.items() if not isinstance(v, AnnData)}
+
     adata = sc.AnnData(X=X,
                        obs=adata.obs.copy(),
                        dtype="float32",
                        var=var,
                        obsp=adata.obsp.copy(),
+                       uns=uns,
                        obsm=obsm
                        ).copy()
     adata.var_names_make_unique()
@@ -114,33 +123,31 @@ def prep_check_adata(adata: AnnData,
     msk_features = np.sum(adata.X, axis=0).A1 == 0
     n_empty_features = np.sum(msk_features)
     if n_empty_features > 0:
-        if verbose:
-            print(f"{n_empty_features} features of mat are empty, they will be removed.")
+        _logg(f"{n_empty_features} features of mat are empty, they will be removed.", level='warn', verbose=verbose)
         adata = adata[:, ~msk_features]
 
     # Check for empty samples
     msk_samples = adata.X.sum(axis=1).A1 == 0
     n_empty_samples = np.sum(msk_samples)
     if n_empty_samples > 0:
-        raise ValueError(f"{n_empty_samples} samples of mat are empty, please remove them.")
+        _logg(f"{n_empty_samples} samples of mat are empty, they will be removed.", level='warn', verbose=verbose)
 
     # Check if log-norm
     _sum = np.sum(adata.X.data[0:100])
     if _sum == np.floor(_sum):
-        if verbose:
-            print("Make sure that normalized counts are passed!")
+        _logg("Make sure that normalized counts are passed!", level='warn', verbose=verbose)
 
     # Check for non-finite values
     if np.any(~np.isfinite(adata.X.data)):
-        raise ValueError(
-            """mat contains non finite values (nan or inf), please set them 
-            to 0 or remove them.""")
+        raise ValueError("mat contains non finite values (nan or inf), please set them to 0 or remove them.")
 
-    # Define idents col name
     if groupby is not None:
-        if groupby not in adata.obs.columns:
-            raise AssertionError(f"`{groupby}` not found in `adata.obs.columns`.")
-        adata.obs.loc[:, 'label'] = adata.obs[groupby]
+        _check_groupby(adata, groupby, verbose)
+
+        if groupby_subset is not None:
+            adata = adata[adata.obs[groupby].isin(groupby_subset), :]
+
+        adata.obs['@label'] = adata.obs[groupby]
 
         # Remove any cell types below X number of cells per cell type
         count_cells = adata.obs.groupby(groupby)[groupby].size().reset_index(name='count').copy()
@@ -151,25 +158,20 @@ def prep_check_adata(adata: AnnData,
             # remove lowly abundant identities
             msk = ~np.isin(adata.obs[[groupby]], lowly_abundant_idents)
             adata = adata[msk]
-            if verbose:
-                print("The following cell identities were excluded: {0}".format(
-                    ", ".join(lowly_abundant_idents)))
-                
+            _logg("The following cell identities were excluded: {0}".format(", ".join(lowly_abundant_idents)),
+                 level='warn', verbose=verbose)
+
     check_vars(adata.var_names,
                complex_sep=complex_sep,
                verbose=verbose)
-
     # Re-order adata vars alphabetically
     adata = adata[:, np.sort(adata.var_names)]
-
     return adata
 
-
-# format variable names
 def check_vars(var_names, complex_sep, verbose=False) -> list:
     """
     Raise a warning if `complex_sep` is part of any variable name.
-    """ 
+    """
     var_issues = []
     if complex_sep is not None:
         for name in var_names:
@@ -177,9 +179,9 @@ def check_vars(var_names, complex_sep, verbose=False) -> list:
                 var_issues.append(name)
     else:
         pass
-    
-    if verbose & (len(var_issues) > 0):
-        print(f"Warning: {var_issues} contain `{complex_sep}`. Consider replacing those!")
+
+    _logg(f"{var_issues} contain `{complex_sep}`. Consider replacing those!",
+         verbose=verbose & (len(var_issues) > 0), level='warn')
 
 
 
@@ -225,7 +227,7 @@ def filter_resource(resource: DataFrame, var_names: Index) -> DataFrame:
 def _choose_mtx_rep(adata, use_raw=False, layer=None, verbose=False) -> csr_matrix:
     """
     Choose matrix (adapted from scanpy)
-    
+
     Parameters
     ----------
     adata
@@ -234,7 +236,7 @@ def _choose_mtx_rep(adata, use_raw=False, layer=None, verbose=False) -> csr_matr
         Use raw attribute of adata if present.
     layer
         Indicate whether to use any layer.
-    
+
     Returns
     -------
         The matrix to be used by liana-py.
@@ -243,24 +245,27 @@ def _choose_mtx_rep(adata, use_raw=False, layer=None, verbose=False) -> csr_matr
     if is_layer & use_raw:
         raise ValueError("Cannot specify `layer` and have `use_raw=True`.")
     if is_layer:
-        if verbose:
-            print(f"Using the `{layer}` layer!")
+        _logg(f"Using the `{layer}` layer!", verbose=verbose)
         X = adata.layers[layer]
     elif use_raw:
         if adata.raw is None:
             raise ValueError("`.raw` is not initialized!")
-        if verbose:
-            print("Using `.raw`!")
+        _logg("Using `.raw`!", verbose=verbose)
         X = adata.raw.X
     else:
-        if verbose:
-            print("Using `.X`!")
+        _logg("Using `.X`!", verbose=verbose)
         X = adata.X
-        
+
     # convert to sparse csr matrix
     if not isspmatrix_csr(X):
-        if verbose:
-            print("Converting mat to CSR format")
+        _logg("Converting to sparse csr matrix!", verbose=verbose)
         X = csr_matrix(X)
-    
+
     return X
+
+def _check_groupby(adata, groupby, verbose):
+    if groupby not in adata.obs.columns:
+        raise AssertionError(f"`{groupby}` not found in `adata.obs.columns`.")
+    if not adata.obs[groupby].dtype.name == 'category':
+        _logg(f"Converting `{groupby}` to categorical!", level='warn', verbose=verbose)
+        adata.obs[groupby] = adata.obs[groupby].astype('category')

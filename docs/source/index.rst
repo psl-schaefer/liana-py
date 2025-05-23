@@ -1,14 +1,14 @@
-LIANA: a one-stop-shop framework for cell-cell communication
-===========================================
+LIANA: an all-in-one framework for cell-cell communication
+===============================================================
 
 |MainBuild| |Issues| |Docs| |Codecov|
 
 .. |MainBuild| image:: https://github.com/saezlab/liana-py/actions/workflows/main.yml/badge.svg
    :target: https://github.com/saezlab/liana-py/actions
-   
+
 .. |Issues| image:: https://img.shields.io/github/issues/saezlab/liana-py.svg
    :target: https://github.com/saezlab/liana-py/issues/
-   
+
 .. |Docs| image:: https://readthedocs.org/projects/liana-py/badge/?version=latest
    :target: https://readthedocs.org/projects/liana-py/badge/?version=latest
 
@@ -18,7 +18,7 @@ LIANA: a one-stop-shop framework for cell-cell communication
 
 LIANA+ is an efficient framework that integrates and extends existing
 methods and knowledge to study cell-cell communication in single-cell,
-spatially-resolved, and multi-modal omics data. 
+spatially-resolved, and multi-modal omics data.
 
 
 .. image:: https://raw.githubusercontent.com/saezlab/liana-py/main/docs/source/_static/abstract.png
@@ -33,19 +33,16 @@ spatially-resolved, and multi-modal omics data.
    installation
    api
    release_notes
+   contributing
    reference
+   notebooks/prior_knowledge
 
 .. toctree::
    :maxdepth: 1
    :hidden:
    :caption: Single-cell Vignettes
 
-   notebooks/basic_usage 
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-   :caption: Multi-Sample Vignettes
+   notebooks/basic_usage
 
    notebooks/liana_c2c
 
@@ -54,6 +51,8 @@ spatially-resolved, and multi-modal omics data.
    notebooks/mofatalk
 
    notebooks/targeted
+
+   notebooks/sc_multi
 
 
 .. toctree::
@@ -65,3 +64,4 @@ spatially-resolved, and multi-modal omics data.
 
    notebooks/bivariate
 
+   notebooks/sma

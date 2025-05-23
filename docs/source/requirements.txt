@@ -1,5 +1,7 @@
-numpydoc
-nbsphinx
-ipython
+docrep
+furo
 ipykernel
+ipython
+nbsphinx
+numpydoc
 pandoc

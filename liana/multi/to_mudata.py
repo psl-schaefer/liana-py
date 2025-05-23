@@ -22,6 +22,7 @@ def adata_to_views(adata: AnnData,
                    view_sep: str = ':',
                    keep_stats: bool = False,
                    verbose: bool = False,
+                   psbulk_kwargs: dict = {},
                    filter_samples: dict = {},
                    filter_by_expr: dict = {},
                    filter_by_prop: dict = {}
@@ -49,6 +50,8 @@ def adata_to_views(adata: AnnData,
     keep_stats:
         If True, keep the pseudobulk statistics in `mdata.uns['psbulk_stats']`. Default is False.
     %(verbose)s
+    psbulk_kwargs:
+        Arguments to pass to `dc.pp.pseudobulk` for pseudobulking. See `decoupler` documentation for more details.
     filter_samples:
         Arguments to pass to `dc.pp.filter_samples` for filtering samples. See `decoupler` documentation for more details.
     filter_by_expr:

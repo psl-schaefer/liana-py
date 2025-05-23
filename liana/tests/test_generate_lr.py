@@ -7,7 +7,7 @@ import decoupler as dc
 def test_generate_lr_resource():
     """Test generate_lr_resource."""
     # load data
-    net = dc.get_progeny(top=1000, organism='human') # reduce top to 1000 for testing
+    net = dc.op.progeny(top=1000, organism='human') # reduce top to 1000 for testing
     resource = select_resource('consensus')
     
     lr_net = generate_lr_geneset(resource, net)
@@ -31,7 +31,7 @@ def test_generate_lr_resource():
 def test_generate_nondefault_lr_resource():
     """Test generate_lr_resource."""
     # load data
-    net = dc.get_progeny(top=1000, organism='human')
+    net = dc.op.progeny(top=1000, organism='human')
     net.drop(columns=['weight'], inplace=True)
     net.rename(columns={'source': 'tf', 'target': 'genesymbol'}, inplace=True)
     

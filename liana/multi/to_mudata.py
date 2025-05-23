@@ -45,15 +45,16 @@ def adata_to_views(adata,
                    sample_key,
                    obs_keys,
                    view_separator=':',
-                   min_count=10,
-                   min_total_count=15,
-                   large_n=10, 
-                   min_prop=0.1,
                    keep_psbulk_stats = False,
                    verbose=False,
-                   **kwargs):
+                   psbulk_kwargs={},
+                   filter_samples={},
+                   filter_by_expr={},
+                   filter_by_prop={}
+                   ):
     """
     Converts an AnnData object to a MuData object with views that represent an aggregate for each entity in `adata.obs[groupby]`.
+    Option to filter samples and genes using functions from decoupler. By default, there is no filtering applied.
     
     Parameters
     ----------
@@ -67,18 +68,18 @@ def adata_to_views(adata,
         Column names in `adata.obs` to merge with the MuData object
     view_separator:
         Separator to use when assigning `adata.var_names` to views
-    min_count:
-        Minimum number of counts per gene per sample to be included in the pseudobulk.
-    min_total_count:
-        Minimum number of counts per sample to be included in the pseudobulk.
-    large_n:
-        Number of samples per group that is considered to be "large".
-    min_prop:
-        Minimum proportion of samples that must have a count for a gene to be included in the pseudobulk.
     keep_psbulk_stats:
         If True, keep the pseudobulk statistics in `mdata.uns['psbulk_stats']`.
     verbose:
         If True, show progress bar.
+    psbulk_kwargs:
+        Keyword arguments used to pass to `decoupler.pp.pseudobulk`. See `decoupler` documentation for more details.
+    filter_samples:
+        Dictionary of keyword arguments used to filter samples. See `decoupler.pp.filter_samples` for more details.
+    filter_by_expr:
+        Dictionary of keyword arguments used to filter genes by expression. See `decoupler.pp.filter_by_expr` for more details.
+    filter_by_prop:
+        Dictionary of keyword arguments used to filter genes by proportion of cells that express it. See `decoupler.pp.filter_by_prop` for more details.
     **kwargs
         Keyword arguments used to aggregate the values per cell into views. See `dc.filter_by_expr` for more details.
     
@@ -94,7 +95,26 @@ def adata_to_views(adata,
     
     views = adata.obs[groupby].unique()
     views = tqdm(views, disable=not verbose)
+
+    psbulk_opts = {'sample_col': sample_key, 'groups_col': None}
+    psbulk_opts.update(psbulk_kwargs)
+
+    if len(filter_samples) > 0:
+        psbulk_sample_filt = filter_samples.copy()
+        psbulk_sample_filt['inplace'] = True
+    else:
+        print('No sample filtering applied.')
     
+    if len(filter_by_expr) == 0:
+        print('No EdgeR-style gene filtering applied.')
+    else:
+        filter_by_expr['inplace'] = True
+    
+    if len(filter_by_prop) == 0:
+        print('No gene filtering applied based on proportion of cells that express it.')
+    else:
+        filter_by_prop['inplace'] = True
+
     padatas = {}
     if keep_psbulk_stats: stats = []
     for view in (views):
@@ -102,25 +122,23 @@ def adata_to_views(adata,
         temp = adata[adata.obs[groupby] == view].copy()
         # assign view to var_names
         temp.var_names = view + view_separator + temp.var_names
-
-        padata = dc.get_pseudobulk(temp,
-                                   sample_col=sample_key,
-                                   groups_col=None,
-                                   **kwargs
-                                   )
+        
+        padata = dc.pp.pseudobulk(temp, **psbulk_opts)
+        
+        if len(filter_samples) > 0:
+            dc.pp.filter_samples(padata, **psbulk_sample_filt)
         
         # only filter genes for views that pass QC
         if 0 in padata.shape:
             continue
-
+        
         # edgeR filtering
-        feature_mask = dc.filter_by_expr(padata,
-                                         min_count=min_count,
-                                         min_total_count=min_total_count,
-                                         large_n=large_n,
-                                         min_prop=min_prop,
-                                         )
-        padata = padata[:, feature_mask]
+        if len(filter_by_expr) > 0:
+            dc.pp.filter_by_expr(padata, **filter_by_expr)
+            
+        # filter genes by proportion of cells that have counts
+        if len(filter_by_prop) > 0:
+            dc.pp.filter_by_prop(padata, **filter_by_prop)
 
         # only append views that pass QC
         if 0 not in padata.shape:

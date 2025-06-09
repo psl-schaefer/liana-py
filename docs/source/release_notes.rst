@@ -1,6 +1,11 @@
 Changelog
 =============
 
+1.6.0 (13.06.2025)
+
+- Adapted and bumped requirements to decopler-py >=2.0.0 | PR #178 by @robinfallegger
+- 
+
 1.5.1 (13.02.2025)
 --------------------------------------------------------
 

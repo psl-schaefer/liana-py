@@ -52,13 +52,13 @@ def estimate_metalinks(adata,
                           uns=adata.uns,
                           obsm=adata.obsm
                           )
-    dc.run_ulm(ad, net = pd_net, use_raw=False, verbose=verbose, **kwargs)
-    met_est = ad.obsm['ulm_estimate']
+    dc.mt.ulm(ad, net = pd_net, raw=False, verbose=verbose, **kwargs)
+    met_est = ad.obsm['score_ulm']
 
     if t_net is not None:
-        dc.run_wmean(ad, t_net, times=0, use_raw=False, verbose=verbose, **kwargs)
+        dc.mt.waggr(ad, t_net, times=0, raw=False, verbose=verbose, fun='wmean', **kwargs)
 
-        out_est = ad.obsm['wmean_estimate']
+        out_est = ad.obsm['score_waggr']
         intersect = np.intersect1d(met_est.columns, out_est.columns)
         out_est = out_est[intersect]
 
@@ -77,7 +77,7 @@ def estimate_metalinks(adata,
     else:
         mmat = met_est
 
-    resource = resource[resource[x_name].isin(mmat.columns)].copy()
+    resource = resource[resource['source'].isin(mmat.columns)].copy()
     receptor = ad[:, ad.var.index.isin(np.unique(resource[y_name]))]
 
     ad.obsm['mmat'] = mmat

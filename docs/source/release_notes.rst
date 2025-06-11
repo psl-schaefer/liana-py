@@ -3,8 +3,13 @@ Changelog
 
 1.6.0 (13.06.2025)
 
-- Adapted and bumped requirements to decopler-py >=2.0.0 | PR #178 by @robinfallegger
-- 
+- Adapted and bumped requirements to decopler-py >=2.0.0 | PR #178 by @robinfallegger addresses #179
+
+- Removed upper Python version requirement #172 #170
+
+- Minor adjustment to SpatialDM Global Moran's R description #176
+
+- Fix feature name warning logic #169
 
 1.5.1 (13.02.2025)
 --------------------------------------------------------

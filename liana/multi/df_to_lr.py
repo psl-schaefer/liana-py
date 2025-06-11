@@ -98,11 +98,10 @@ def df_to_lr(adata,
 
     # reduce dim of adata
     intersect = np.intersect1d(adata.var_names, dea_df.index)
-    if intersect.shape[0]==adata.shape[1]:
+    if intersect.shape[0] != adata.shape[1]:
         _logg('Features in adata and dea_df are mismatched.', verbose=verbose, level='warn')
     adata =  adata[:, intersect]
 
-    # get label cats
     labels = adata.obs[I.label].cat.categories
     dedict = {}
     for label in labels:

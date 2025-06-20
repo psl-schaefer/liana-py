@@ -50,7 +50,7 @@ extras = [
   "mofax",
   "mofapy2>=0.7.0",
   "requests>=2.25.1",
-  "corneto=0.9.1-alpha.6",
+  "corneto==0.9.1-alpha.6",
   "cvxpy-base>=1.6.0",
   "PySCIPOpt>=5.2.1",
 ]

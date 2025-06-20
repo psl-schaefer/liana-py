@@ -145,6 +145,13 @@ Specify `vX.X.X` as a tag name and create a release.
 For more information, see [managing GitHub releases][].
 This will automatically create a git tag and trigger a Github workflow that creates a release on [PyPI][].
 
+We also use bump2version to automatically update the version number in all places and automatically create a git tag. Run one of the following commands in the root of the repository
+
+bump2version patch
+bump2version minor
+bump2version major
+
+
 [semver]: https://semver.org/
 [managing GitHub releases]: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
 [pypi]: https://pypi.org/

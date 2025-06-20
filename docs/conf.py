@@ -96,6 +96,11 @@ intersphinx_mapping = {
     "anndata": ("https://anndata.readthedocs.io/en/stable/", None),
     "scanpy": ("https://scanpy.readthedocs.io/en/stable/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "mudata": ("https://mudata.readthedocs.io/en/latest/", None),
+    "sklearn": ("https://scikit-learn.org/stable/", None),
+    "plotnine": ("https://plotnine.org/", None),
+    # add more as needed
 }
 
 # List of patterns, relative to source directory, that match files and
@@ -125,7 +130,17 @@ html_theme_options = {
 pygments_style = "default"
 
 nitpick_ignore = [
-    # If building the documentation fails because of a missing link that is outside your control,
-    # you can add an exception to this list.
-    #     ("py:class", "igraph.Graph"),
+    ("py:class", "callable"),
+    ("py:class", "optional"),
+    ("py:class", "array-like"),
+    ("py:class", "csr_matrix"),
+    ("py:class", "tuples"),
+    ("py:class", "corneto.Graph"),
+    ("py:attr", "n_obs"),
+    ("py:attr", "n_var"),
+    ("py:attr", "obs"),
+    ("py:attr", "obsm"),
+    ("py:attr", "var"),
+    ("py:attr", "varm"),
+    # add more as needed
 ]

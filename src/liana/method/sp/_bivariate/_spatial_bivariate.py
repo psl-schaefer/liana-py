@@ -1,39 +1,38 @@
 from __future__ import annotations
-from typing import Union, Optional
 
 import numpy as np
 import pandas as pd
-from scipy.sparse import csr_matrix, isspmatrix_csr
 from anndata import AnnData
 from mudata import MuData
+from scipy.sparse import csr_matrix, isspmatrix_csr
 
+from liana._constants import DefaultValues as V
+from liana._constants import Keys as K
+from liana._docs import d
+from liana._logging import _logg
+from liana.method._pipe_utils import assert_covered, prep_check_adata
 from liana.method._pipe_utils._common import _get_props
-from liana.utils.mdata_to_anndata import mdata_to_anndata
-from liana.resource.select_resource import _handle_resource
-from liana.method._pipe_utils import prep_check_adata, assert_covered
-
-from liana.method.sp._utils import _add_complexes_to_var, _zscore
 from liana.method.sp._bivariate._global_functions import GlobalFunction
 from liana.method.sp._bivariate._local_functions import LocalFunction
+from liana.method.sp._utils import _add_complexes_to_var, _zscore
+from liana.resource.select_resource import _handle_resource
+from liana.utils.mdata_to_anndata import mdata_to_anndata
 
-from liana._logging import _logg
-from liana._docs import d
-from liana._constants import Keys as K, DefaultValues as V
 
+class SpatialBivariate:
+    """A class for bivariate local spatial metrics."""
 
-class SpatialBivariate():
-    """ A class for bivariate local spatial metrics. """
     def __init__(self, x_name: str = 'x', y_name: str = 'y'):
         self.x_name = x_name
         self.y_name = y_name
 
     @d.dedent
     def __call__(self,
-                 mdata: (MuData | AnnData),
-                 local_name: (str | None) = 'cosine',
-                 global_name: (None | str | list) = None,
+                 mdata: MuData | AnnData,
+                 local_name: str | None = 'cosine',
+                 global_name: None | str | list = None,
                  resource_name: str = None,
-                 resource: Optional[pd.DataFrame] = V.resource,
+                 resource: pd.DataFrame | None = V.resource,
                  interactions: list = V.interactions,
                  connectivity_key: str = K.connectivity_key,
                  mask_negatives: bool = False,
@@ -42,17 +41,16 @@ class SpatialBivariate():
                  seed: int = V.seed,
                  nz_prop: float = 0.05,
                  remove_self_interactions: bool = True,
-                 complex_sep: (None | str) = "_",
+                 complex_sep: None | str = "_",
                  xy_sep: str = V.lr_sep,
                  verbose: bool = V.verbose,
                  **kwargs
-                 ) -> Union[AnnData, pd.DataFrame] | None:
+                 ) -> AnnData | pd.DataFrame | None:
         """
         A method for bivariate local spatial metrics.
 
         Parameters
         ----------
-
         %(mdata)s
         %(local_name)s
         %(global_name)s
@@ -65,9 +63,11 @@ class SpatialBivariate():
         %(n_perms)s
         %(seed)s
         nz_prop: float
-            Minimum proportion of non-zero values for each features. For example, if working with gene
-            expression data, this would be the proportion of cells expressing a gene. Both features must
-            have a proportion greater than `nz_prop` to be considered in the analysis.
+            Minimum proportion of non-zero values for each features.
+            For example, if working with gene expression data,
+            this would be the proportion of cells expressing a gene.
+            Both features must have a proportion greater than
+            `nz_prop` to be considered in the analysis.
         complex_sep: str
             Separator to use for complex names.
         xy_sep: str
@@ -102,12 +102,10 @@ class SpatialBivariate():
 
         Returns
         -------
-        An AnnData object, (optionally) with multiple layers which correspond categories/p-values, and the
-        actual scores are stored in `.X`. 
+        An AnnData object, (optionally) with multiple layers which correspond
+        categories/p-values, and the actual scores are stored in `.X`.
         Moreover, global stats are stored in ``.var``.
-
         """
-
         if n_perms is not None:
             if not isinstance(n_perms, int) or n_perms < 0:
                 raise ValueError("n_perms must be None, 0 for analytical or > 0 for permutation")
@@ -166,8 +164,11 @@ class SpatialBivariate():
                                 index=adata.var_names
                                 ).reset_index().rename(columns={'index': 'gene'})
         # join global stats to LRs from resource
-        xy_stats = resource.merge(self._rename_means(xy_stats, entity=self.x_name)).merge(
-                                    self._rename_means(xy_stats, entity=self.y_name))
+        xy_stats = (
+            resource
+            .merge(self._rename_means(xy_stats, entity=self.x_name))
+            .merge(self._rename_means(xy_stats, entity=self.y_name))
+        )
 
         # filter according to props
         xy_stats = xy_stats[(xy_stats[f'{self.x_name}_props'] >= nz_prop) &
@@ -347,9 +348,7 @@ class SpatialBivariate():
         return cats
 
     def show_functions(self):
-        """
-        Print information about all bivariate local metrics.
-        """
+        """Print information about all bivariate local metrics."""
         funs = LocalFunction.instances.copy()
         for function in funs.values():
             funs[function.name] = {

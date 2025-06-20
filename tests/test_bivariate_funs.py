@@ -1,11 +1,16 @@
 import numpy as np
-
-from liana.method.sp._bivariate._local_functions import _vectorized_pearson, _vectorized_spearman, \
-    _vectorized_cosine, _vectorized_jaccard, _masked_spearman, _local_morans, _product, \
-    _norm_product
-
 from scipy.sparse import csr_matrix
 
+from liana.method.sp._bivariate._local_functions import (
+    _local_morans,
+    _masked_spearman,
+    _norm_product,
+    _product,
+    _vectorized_cosine,
+    _vectorized_jaccard,
+    _vectorized_pearson,
+    _vectorized_spearman,
+)
 
 rng = np.random.default_rng(seed=0)
 

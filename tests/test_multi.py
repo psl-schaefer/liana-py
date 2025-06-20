@@ -1,13 +1,11 @@
-from liana.multi import to_tensor_c2c, adata_to_views, lrs_to_views, filter_view_markers
-from liana.utils._getters import get_factor_scores, get_variable_loadings
-from liana.testing import sample_lrs
-
+import cell2cell as c2c
 import numpy as np
 import pandas as pd
 
-import cell2cell as c2c
-
+from liana.multi import adata_to_views, filter_view_markers, lrs_to_views, to_tensor_c2c
+from liana.testing import sample_lrs
 from liana.testing._sample_anndata import generate_toy_adata
+from liana.utils._getters import get_factor_scores, get_variable_loadings
 
 adata = generate_toy_adata()
 

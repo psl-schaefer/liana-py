@@ -1,7 +1,6 @@
-from liana.testing import _sample_dea
 from liana.multi import df_to_lr
+from liana.testing import _sample_dea
 from liana.testing._sample_anndata import generate_toy_adata
-
 
 # Create a toy AnnData object
 adata = generate_toy_adata()

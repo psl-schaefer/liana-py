@@ -1,15 +1,17 @@
 from __future__ import annotations
 
-import pandas as pd
+from typing import Literal
+
+import networkx as nx
 import numpy as np
-from typing import Literal, Union
+import pandas as pd
 import scanpy as sc
 from matplotlib import pyplot as plt
-import networkx as nx
-from liana.plotting._common import _prep_liana_res, _invert_scores, _filter_by, _get_top_n
 
-from liana._docs import d
 from liana._constants import Keys as K
+from liana._docs import d
+from liana.plotting._common import _filter_by, _get_top_n, _invert_scores, _prep_liana_res
+
 
 def _pivot_liana_res(
         liana_res: pd.DataFrame,
@@ -60,15 +62,18 @@ def _set_adata_color(adata, label, color_dict=None, hex=True):
 def _get_adata_colors(adata, label):
     if f"{label}_colors" not in adata.uns:
         _set_adata_color(adata, label)
-    return {
-        x: y
-        for x, y in zip(adata.obs[label].cat.categories, adata.uns[f"{label}_colors"])
-    }
+    return dict(
+        zip(
+            adata.obs[label].cat.categories,
+            adata.uns[f"{label}_colors"],
+            strict=False
+        )
+    )
 
 def get_mask_df(
         pivot_table: pd.DataFrame,
-        source_cell_type: Union[list, str] = None,
-        target_cell_type: Union[list, str] = None,
+        source_cell_type: list | str = None,
+        target_cell_type: list | str = None,
         mode: Literal['and', 'or'] ='or') -> pd.DataFrame:
 
     if source_cell_type is None and target_cell_type is None:
@@ -95,8 +100,8 @@ def get_mask_df(
 @d.dedent
 def circle_plot(
         adata: sc.AnnData,
-        uns_key: Union[str, None] = K.uns_key,
-        liana_res: Union[pd.DataFrame, None] = None,
+        uns_key: str | None = K.uns_key,
+        liana_res: pd.DataFrame | None = None,
         groupby: str = None,
         source_key: str = 'source',
         target_key: str = 'target',
@@ -107,8 +112,8 @@ def circle_plot(
         orderby_ascending: bool | None = None,
         orderby_absolute: bool = False,
         filter_fun: callable = None,
-        source_labels: Union[list, str] = None,
-        target_labels: Union[list, str] = None,
+        source_labels: list | str | None = None,
+        target_labels: list | str | None = None,
         ligand_complex: list | str | None = None,
         receptor_complex: list | str | None = None,
         pivot_mode: Literal['counts', 'mean'] = 'counts',

@@ -1,7 +1,8 @@
-import pandas as pd
 import numpy as np
-from liana._logging import _logg, _check_if_installed
+import pandas as pd
+
 from liana._constants import DefaultValues as V
+from liana._logging import _check_if_installed, _logg
 
 
 def build_prior_network(ppis,
@@ -30,7 +31,6 @@ def build_prior_network(ppis,
     corneto.Graph
 
     """
-
     cn = _check_if_installed("corneto")
 
     if lr_sep is not None:
@@ -146,7 +146,6 @@ def find_causalnet(
     **kwargs : dict, optional
         Additional arguments to pass to the solver.
     """
-
     cn = _check_if_installed("corneto")
 
     if solver is None:
@@ -204,9 +203,6 @@ def find_causalnet(
         P.add_objectives(W.T @ E)
 
         _logg(f"Solving with {solver}...", verbose=verbose)
-        if (solver=='scipy') and verbose:
-            kwargs.update(scipy_options=dict(disp='true'))
-
         P.solve(
             solver=solver,
             verbosity=int(verbose),
@@ -214,7 +210,7 @@ def find_causalnet(
 
         obj_names = ["Loss (unfitted inputs/output)", "Edge penalty error", "Node penalty error"]
         _logg("Solution summary:", verbose=verbose)
-        for s, o in zip(obj_names, P.objectives):
+        for s, o in zip(obj_names, P.objectives, strict=False):
             _logg(f" - {s}: {o.value}", verbose=verbose)
 
         rows, cols = cn.methods.carnival.export_results(P, G, input_node_scores, output_node_scores)
@@ -225,8 +221,8 @@ def find_causalnet(
             df_all = df
             continue
         else:
-            set_df = set(tuple(row) for row in df.values)
-            set_df_all = set(tuple(row) for row in df_all.values)
+            set_df = {tuple(row) for row in df.values}
+            set_df_all = {tuple(row) for row in df_all.values}
 
             if set_df.issubset(set_df_all):
                 stable_count += 1

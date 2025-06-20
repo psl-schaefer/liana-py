@@ -1,7 +1,8 @@
 import numpy as np
-from sklearn.neighbors import BallTree
-from plotnine import ggplot, aes, geom_line, geom_point, theme_bw, xlab, ylab
 from pandas import DataFrame
+from plotnine import aes, geom_line, geom_point, ggplot, theme_bw, xlab, ylab
+from sklearn.neighbors import BallTree
+
 
 def query_bandwidth(coordinates: np.ndarray,
                     start: int = 0,

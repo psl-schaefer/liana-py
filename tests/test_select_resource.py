@@ -1,5 +1,7 @@
-from liana.resource.select_resource import _handle_resource, select_resource
 import pytest
+
+from liana.resource.select_resource import _handle_resource, select_resource
+
 
 def test_select_interactions():
     # generate list of 2x strings

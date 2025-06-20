@@ -1,11 +1,11 @@
-"""
-Functions to deal with protein complexes
-"""
+"""Functions to deal with protein complexes"""
 from __future__ import annotations
 
 import pandas as pd
-from liana._logging import _logg
+
 from liana._docs import d
+from liana._logging import _logg
+
 
 @d.dedent
 def filter_reassemble_complexes(lr_res,

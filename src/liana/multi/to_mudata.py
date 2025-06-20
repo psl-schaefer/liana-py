@@ -1,18 +1,21 @@
 from __future__ import annotations
 
-import numpy as np
-import pandas as pd
 import warnings as warnings
 
+import numpy as np
+import pandas as pd
 from anndata import AnnData
 from mudata import MuData
 from tqdm import tqdm
 
-from ..method import process_scores
-from liana._logging import _check_if_installed, _logg
-from liana.method._pipe_utils import _check_groupby
+from liana._constants import DefaultValues as V
+from liana._constants import Keys as K
+from liana._constants import PrimaryColumns as P
 from liana._docs import d
-from liana._constants import DefaultValues as V, Keys as K, PrimaryColumns as P
+from liana._logging import _check_if_installed
+from liana.method import process_scores
+from liana.method._pipe_utils import _check_groupby
+
 
 @d.dedent
 def adata_to_views(
@@ -23,10 +26,10 @@ def adata_to_views(
     view_sep: str = ':',
     keep_stats: bool = False,
     verbose: bool = False,
-    psbulk_kwargs: dict = {},
-    filter_samples_kwargs: dict = {},
-    filter_by_expr_kwargs: dict = {},
-    filter_by_prop_kwargs: dict = {},
+    psbulk_kwargs: dict = None,
+    filter_samples_kwargs: dict = None,
+    filter_by_expr_kwargs: dict = None,
+    filter_by_prop_kwargs: dict = None,
 ):
     """
     Converts an AnnData object to a MuData object with views that represent an aggregate for each entity in `adata.obs[groupby]`.
@@ -65,19 +68,22 @@ def adata_to_views(
     Returns a MuData object with views that represent an aggregate for each entity in `adata.obs[groupby]`.
 
     """
-
     # Check if MuData & decoupler are installed
     dc = _check_if_installed(package_name="decoupler")
 
     views = adata.obs[groupby].unique()
     views = tqdm(views, disable=not verbose)
 
-
     _check_groupby(adata=adata, groupby=groupby, verbose=verbose)
 
-    filter_samples_kwargs = filter_samples_kwargs or {}
-    filter_by_expr_kwargs = filter_by_expr_kwargs or {}
-    filter_by_prop_kwargs = filter_by_prop_kwargs or {}
+    if psbulk_kwargs is None:
+        psbulk_kwargs = {}
+    if filter_samples_kwargs is None:
+        filter_samples_kwargs = {}
+    if filter_by_expr_kwargs is None:
+        filter_by_expr_kwargs = {}
+    if filter_by_prop_kwargs is None:
+        filter_by_prop_kwargs = {}
 
     padatas = {}
     if keep_stats:
@@ -92,7 +98,7 @@ def adata_to_views(
             temp,
             sample_col=sample_key,
             groups_col=None,
-            **(psbulk_kwargs or {})
+            **psbulk_kwargs
         )
 
         if filter_samples_kwargs:
@@ -229,7 +235,7 @@ def lrs_to_views(adata: AnnData,
         raise ValueError(f"Score column `{score_key}` not found in `liana_res`")
 
     if isinstance(obs_keys, list):
-        if any([key not in adata.obs.keys() for key in obs_keys]):
+        if any(key not in adata.obs for key in obs_keys):
             raise ValueError(f'`{obs_keys}` not found in `adata.obs`!')
     elif obs_keys is not None:
         raise ValueError('`obs_keys` must be a list or `None`!')
@@ -321,7 +327,7 @@ def _remove_mod_var(mdata, markers, view_sep, var_column):
         negative_markers = [marker for mod in markers.keys() if mod != current_mod for marker in markers[mod]]
 
         if current_mod not in list(markers.keys()):
-            warnings.warn('no markers in dict for view: {0}'.format(current_mod), Warning)
+            warnings.warn(f'no markers in dict for view: {current_mod}', Warning, stacklevel=2)
         else:
             #keep negative_markers not in markers[current_mod] and add view_sep
             negative_markers = [current_mod + view_sep + marker for marker in negative_markers if marker not in markers[current_mod]]
@@ -344,6 +350,7 @@ def filter_view_markers(mdata: MuData,
                         ):
     """
     Used for removing potential cell type marker genes found in the background of other views and thought to be contamination.
+
     In each view, sets highly variable genes to False if they are in the markers dict for another view, but not if they are in the markers for the same view.
 
 
@@ -370,7 +377,7 @@ def filter_view_markers(mdata: MuData,
     # check that var_column is in var for all modalities
     if var_column is not None:
         if not all(var_column in mdata.mod[mod].var.columns for mod in mdata.mod.keys()):
-            raise ValueError('{0} is not in the columns of .var for all modalities'.format(var_column))
+            raise ValueError(f'{var_column} is not in the columns of .var for all modalities')
 
     if inplace:
         _remove_mod_var(mdata, markers, view_sep, var_column)

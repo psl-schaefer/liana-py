@@ -3,6 +3,7 @@ from types import ModuleType
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
+
 def _logg(message, level='info', verbose=False):
     """
     Log a message with a specified logging level.
@@ -18,12 +19,13 @@ def _logg(message, level='info', verbose=False):
         elif level == "info":
             logging.info(message)
 
+
 def _check_if_installed(package_name: str, custom_error_message: str = None) -> ModuleType:
     try:
         imported_module = __import__(package_name)
         return imported_module
     except ImportError:
         if custom_error_message:
-            raise ImportError(custom_error_message)
+            raise ImportError(custom_error_message) from None
         else:
-            raise ImportError(f'{package_name} is not installed. Please install it with: pip install {package_name}')
+            raise ImportError(f'{package_name} is not installed. Please install it with: pip install {package_name}') from None

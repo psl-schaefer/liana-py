@@ -1,5 +1,7 @@
-from liana._constants import PrimaryColumns as P, DefaultValues as V
 from numpy import union1d
+
+from liana._constants import DefaultValues as V
+from liana._constants import PrimaryColumns as P
 
 
 def _join_stats(source, target, dedict, resource):

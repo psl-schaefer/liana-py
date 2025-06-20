@@ -1,10 +1,12 @@
-from itertools import product
-import urllib.request
 import os
+import urllib.request
+from itertools import product
 
 import numpy as np
 import pandas as pd
+
 from liana._logging import _logg
+
 
 def _replace_subunits(lst, my_dict, one_to_many):
     result = []
@@ -126,7 +128,7 @@ def translate_column(
 
 
 # function that loops over columns and applies translate_column
-def translate_resource(resource, map_df, columns=['ligand', 'receptor'], **kwargs):
+def translate_resource(resource, map_df, columns=None, **kwargs):
     """
     Generate orthologs for multiple columns in a DataFrame.
 
@@ -146,6 +148,9 @@ def translate_resource(resource, map_df, columns=['ligand', 'receptor'], **kwarg
     Resulting DataFrame with translated columns.
 
     """
+    if columns is None:
+        columns = ['ligand', 'receptor']
+
     for column in columns:
         resource = translate_column(resource, map_df, column, **kwargs)
 
@@ -161,7 +166,7 @@ def get_hcop_orthologs(url="https://ftp.ebi.ac.uk/pub/databases/genenames/hcop/h
     Simple function to download the HCOP file from the EBI FTP server and filter it by minimum evidence.
 
     Parameters
-     ----------
+    ----------
     url : str
         URL of the HCOP file. See https://ftp.ebi.ac.uk/pub/databases/genenames/hcop/ for bulk download options besides human and mouse.
     filename : str

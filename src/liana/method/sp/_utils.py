@@ -1,20 +1,18 @@
-
-from pandas import Series
 import numpy as np
-from scipy.sparse import csr_matrix, isspmatrix_csr, hstack
 from anndata import AnnData
+from pandas import Series
+from scipy.sparse import csr_matrix, hstack, isspmatrix_csr
+
 
 def _add_complexes_to_var(adata, entities, complex_sep='_'):
-    """
-    Generate an AnnData object with complexes appended as variables.
-    """
+    """Generate an AnnData object with complexes appended as variables."""
     complexes = entities[Series(entities).str.contains(complex_sep)]
     X = None
     for comp in complexes:
         subunits = comp.split(complex_sep)
 
         # keep only complexes, the subunits of which are in var
-        if all([subunit in adata.var.index for subunit in subunits]):
+        if all(subunit in adata.var.index for subunit in subunits):
             adata.var.loc[comp, :] = None
 
             # create matrix for this complex

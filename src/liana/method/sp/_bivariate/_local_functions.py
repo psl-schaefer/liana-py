@@ -1,15 +1,14 @@
 import numba as nb
 import numpy as np
-from scipy.stats import rankdata,norm
 from scipy.sparse import issparse
+from scipy.stats import norm, rankdata
 from tqdm import tqdm
-from liana.method.sp._utils import _zscore, _spatialdm_weight_norm
+
+from liana.method.sp._utils import _spatialdm_weight_norm, _zscore
 
 
 class LocalFunction:
-    """
-    Class representing information about bivariate spatial functions.
-    """
+    """Class representing information about bivariate spatial functions."""
 
     instances = {}
 
@@ -49,15 +48,16 @@ class LocalFunction:
         if n_perms is None:
             local_pvals = None
         elif n_perms > 0:
-            local_pvals = self._permutation_pvals(x_mat=x_mat,
-                                                  y_mat=y_mat,
-                                                  weight=weight,
-                                                  local_truth=local_scores,
-                                                  n_perms=n_perms,
-                                                  seed=seed,
-                                                  mask_negatives=mask_negatives,
-                                                  verbose=verbose
-                                                  )
+            local_pvals = \
+                self._permutation_pvals(x_mat=x_mat,
+                                        y_mat=y_mat,
+                                        weight=weight,
+                                        local_truth=local_scores,
+                                        n_perms=n_perms,
+                                        seed=seed,
+                                        mask_negatives=mask_negatives,
+                                        verbose=verbose
+                                        )
         elif n_perms == 0:
             local_pvals = self._zscore_pvals(x_mat=x_mat,
                                              y_mat=y_mat,
@@ -88,7 +88,7 @@ class LocalFunction:
         local_pvals = np.zeros((spot_n, xy_n))
 
         # shuffle the matrix
-        for i in tqdm(range(n_perms), disable=not verbose):
+        for _ in tqdm(range(n_perms), disable=not verbose):
             _idx = rng.permutation(spot_n)
             perm_score = self.fun(x_mat=x_mat[_idx, :], y_mat=y_mat[_idx, :], weight=weight)
             if mask_negatives:
@@ -100,11 +100,9 @@ class LocalFunction:
 
         return local_pvals
 
-
     def _zscore_pvals(self, x_mat, y_mat, local_truth, weight, mask_negatives):
         """
         Local Moran's R analytical p-values as in spatialDM (Li et al., 2022)
-
 
         Parameters
         ----------
@@ -153,9 +151,9 @@ class LocalFunction:
         Parameters
         ----------
         x_sigma
-            Standard deviations for each x (e.g. std of all ligands in the matrix)
+            Standard deviations for each x (e.g. std of all ligands)
         y_sigma
-            Standard deviations for each y (e.g. std of all receptors in the matrix)
+            Standard deviations for each y (e.g. std of all receptors)
         weight
             connectivity weight matrix
         spot_n
@@ -306,6 +304,7 @@ def _vectorized_jaccard(x_mat, y_mat, weight):
 
 def _local_morans(x_mat, y_mat, weight):
     """
+    Local Moran's I
 
     Parameters
     ----------
@@ -351,6 +350,7 @@ def _norm_product(x_mat, y_mat, weight):
 
     return score
 
+
 _bivariate_functions = [
         LocalFunction(
             name="pearson",
@@ -365,23 +365,23 @@ _bivariate_functions = [
         LocalFunction(
             name="cosine",
             metadata="weighted Cosine similarity",
-            fun = _vectorized_cosine,
+            fun=_vectorized_cosine,
         ),
         LocalFunction(
             name="jaccard",
             metadata="weighted Jaccard similarity",
-            fun = _vectorized_jaccard,
+            fun=_vectorized_jaccard,
         ),
         LocalFunction(
             name="product",
             metadata="simple weighted product",
-            fun = _product,
+            fun=_product,
             reference="If vars are z-scaled = Lee's static (Lee 2021;J.Geograph.Syst.)"
         ),
         LocalFunction(
             name="norm_product",
             metadata="normalized weighted product",
-            fun = _norm_product,
+            fun=_norm_product,
         ),
         LocalFunction(
             name="morans",

@@ -1,5 +1,7 @@
-from liana.method.sc._Method import Method, MethodMeta
 import numpy as np
+
+from liana.method.sc._Method import Method, MethodMeta
+
 
 def _inter_score(x):
     inter_score = np.minimum(x['ligand_cdf'], x['receptor_cdf'])

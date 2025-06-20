@@ -1,10 +1,10 @@
 import pathlib
+from itertools import product
 from os import path
 from unittest import TestCase
 
 from pandas import read_csv
 from pandas.testing import assert_frame_equal
-from itertools import product
 
 from liana.method import rank_aggregate
 from liana.method.sc._rank_aggregate import AggregateClass
@@ -78,12 +78,12 @@ def test_aggregate_on_mdata():
     rank_aggregate(mdata,
                    groupby='bulk_labels',
                    n_perms=None,
-                   mdata_kwargs=dict(
-                       x_mod='adata_x',
-                       y_mod='adata_y',
-                       x_transform=False,
-                       y_transform=False
-                       ),
+                   mdata_kwargs={
+                       'x_mod': 'adata_x',
+                       'y_mod': 'adata_y',
+                       'x_transform': False,
+                       'y_transform': False
+                   },
                    use_raw=False,
                    interactions=interactions,
                    verbose=True)

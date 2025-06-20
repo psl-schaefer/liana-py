@@ -1,7 +1,8 @@
 from scipy.stats import gmean
 
-from liana.method.sc._Method import Method, MethodMeta
 from liana.method._pipe_utils._get_mean_perms import _calculate_pvals
+from liana.method.sc._Method import Method, MethodMeta
+
 
 def _gmean_score(x, perm_stats) -> tuple:
     """

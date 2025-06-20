@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import pandas as pd
-from liana._docs import d
 from anndata import AnnData
 from mudata import MuData
+
+from liana._docs import d
+
 
 @d.dedent
 def get_factor_scores(adata:AnnData | MuData,
@@ -23,7 +25,6 @@ def get_factor_scores(adata:AnnData | MuData,
 
     Returns
     -------
-
     Returns a pandas DataFrame with the factor scores.
 
     """
@@ -32,7 +33,7 @@ def get_factor_scores(adata:AnnData | MuData,
 
     df = pd.DataFrame(adata.obsm[obsm_key], index=adata.obs.index)
 
-    df.columns = ['Factor{0}'.format(x + 1) for x in range(df.shape[1])]
+    df.columns = [f'Factor{x + 1}' for x in range(df.shape[1])]
     df = df.reset_index()
 
     # join with metadata
@@ -48,8 +49,8 @@ def get_variable_loadings(adata: AnnData | MuData,
                           view_sep:str | None = None,
                           variable_sep:str | None = None,
                           pair_sep:str | None = None,
-                          var_names:list = ['ligand_complex', 'receptor_complex'],
-                          pair_names:list = ['source', 'target'],
+                          var_names:list = None,
+                          pair_names:list = None,
                           drop_columns:bool = True
                           ):
     """
@@ -57,7 +58,6 @@ def get_variable_loadings(adata: AnnData | MuData,
 
     Parameters
     ----------
-
     %(adata)s
     varm_key: str
         Key to use when extracting variable loadings from `mdata.varm`
@@ -72,11 +72,14 @@ def get_variable_loadings(adata: AnnData | MuData,
 
     Returns
     -------
-
     Returns a pandas DataFrame with the variable loadings for the specified index.
     """
     if varm_key not in adata.varm.keys():
         raise ValueError(f'{varm_key} not found in adata.varm')
+    if var_names is None:
+        var_names = ['ligand_complex', 'receptor_complex']
+    if pair_names is None:
+        pair_names = ['source', 'target']
 
     n_factors = adata.varm[varm_key].shape[1]
     columns = [f'Factor{i+1}' for i in range(n_factors)]

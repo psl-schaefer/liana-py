@@ -1,10 +1,12 @@
-from anndata import AnnData
 import numpy as np
+from anndata import AnnData
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import normalize
 
+from liana._constants import DefaultValues as V
+from liana._constants import Keys as K
 from liana._docs import d
-from liana._constants import Keys as K, DefaultValues as V
+
 
 def _gaussian(distance_mtx, bandwidth):
     return np.exp(-(distance_mtx ** 2.0) / (2.0 * bandwidth ** 2.0))
@@ -39,7 +41,6 @@ def spatial_neighbors(adata: AnnData,
 
     Parameters
     ----------
-
     %(adata)s
     bandwidth
          Denotes signaling length (`l`) and controls the maximum distance at which two spots are considered.
@@ -83,7 +84,6 @@ def spatial_neighbors(adata: AnnData,
         - :attr:`anndata.AnnData.obsp` ``['{key_added}_connectivities']`` with the aforementioned array
 
     """
-
     if cutoff is None:
         raise ValueError("`cutoff` must be provided!")
     assert spatial_key in adata.obsm

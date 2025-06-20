@@ -1,8 +1,10 @@
 import pandas as pd
 import plotnine as p9
 
-from liana._constants import Keys as K, DefaultValues as V
+from liana._constants import DefaultValues as V
+from liana._constants import Keys as K
 from liana._docs import d
+
 
 @d.dedent
 def target_metrics(misty = None,
@@ -38,7 +40,6 @@ def target_metrics(misty = None,
 
     Returns
     -------
-
     Returns a plotnine plot.
 
     """
@@ -91,7 +92,6 @@ def contributions(misty = None,
 
     Parameters
     ----------
-
     %(misty)s
     target_metrics
         A target_metrics DataFrame
@@ -160,7 +160,6 @@ def interactions(misty= None,
 
     Parameters
     ----------
-
     %(misty)s
     view : str
         A view to plot

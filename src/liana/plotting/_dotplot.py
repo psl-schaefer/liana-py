@@ -2,14 +2,25 @@ from __future__ import annotations
 
 import anndata
 import pandas
+from plotnine import (
+    aes,
+    element_rect,
+    element_text,
+    facet_grid,
+    geom_point,
+    ggplot,
+    labs,
+    scale_color_cmap,
+    scale_size_continuous,
+    theme,
+    theme_bw,
+)
 
-from plotnine import ggplot, geom_point, aes, \
-    facet_grid, labs, theme_bw, theme, element_text, element_rect, scale_size_continuous, scale_color_cmap
-
-from liana.plotting._common import _prep_liana_res, _check_var, _get_top_n, _filter_by, _invert_scores
-
+from liana._constants import DefaultValues as V
+from liana._constants import Keys as K
 from liana._docs import d
-from liana._constants import Keys as K, DefaultValues as V
+from liana.plotting._common import _check_var, _filter_by, _get_top_n, _invert_scores, _prep_liana_res
+
 
 @d.dedent
 def dotplot(adata: anndata.AnnData = None,
@@ -158,7 +169,6 @@ def dotplot_by_sample(adata: anndata.AnnData  = None,
     Returns a ggplot for the specified interactions by sample.
 
     """
-
     liana_res = _prep_liana_res(adata=adata,
                                 liana_res=liana_res,
                                 source_labels=source_labels,

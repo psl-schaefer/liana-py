@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import anndata
 import numpy as np
+from joblib import Parallel, delayed
 from tqdm import tqdm
 
-from joblib import Parallel, delayed
 
 def _get_means_perms(adata: anndata.AnnData,
                      n_perms: int,
@@ -39,7 +39,6 @@ def _get_means_perms(adata: anndata.AnnData,
         - receptor_pos: Index of the receptor in the perms tensor
         - labels_pos: Index of cell identities in the perms tensor
     """
-
     if isinstance(norm_factor, np.float32):
         adata.X /= norm_factor
 

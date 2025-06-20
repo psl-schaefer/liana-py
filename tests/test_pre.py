@@ -1,6 +1,7 @@
+import numpy as np
 import pytest
 from scanpy.datasets import pbmc68k_reduced
-import numpy as np
+
 from liana.method._pipe_utils._pre import assert_covered, prep_check_adata
 
 adata = pbmc68k_reduced()

@@ -1,11 +1,10 @@
 import pandas
-from numpy import max, min, isclose
+from numpy import isclose, max, min
 from numpy.testing import assert_almost_equal
 from pandas import DataFrame
 
-from liana.method import cellphonedb, singlecellsignalr as sca, \
-    natmi, connectome, logfc, geometric_mean, cellchat, scseqcomm
-
+from liana.method import cellchat, cellphonedb, connectome, geometric_mean, logfc, natmi, scseqcomm
+from liana.method import singlecellsignalr as sca
 from liana.testing._sample_anndata import generate_toy_adata
 
 # load toy adata
@@ -165,8 +164,9 @@ def test_methods_by_sample():
 
 
 def test_methods_on_mdata():
-    from liana.testing._sample_anndata import generate_toy_mdata
     from itertools import product
+
+    from liana.testing._sample_anndata import generate_toy_mdata
 
     mdata = generate_toy_mdata()
     mdata.mod['adata_y'].var.index = 'scaled:' + mdata.mod['adata_y'].var.index
@@ -179,13 +179,12 @@ def test_methods_on_mdata():
         use_raw=False,
         interactions=interactions,
         verbose=True,
-        mdata_kwargs=dict(
-            x_mod='adata_x',
-            y_mod='adata_y',
-            x_transform=False,
-            y_transform=False
-            ),
-        )
+        mdata_kwargs={
+            'x_mod': 'adata_x',
+            'y_mod': 'adata_y',
+            'x_transform': False,
+            'y_transform': False
+            })
 
     assert mdata.uns['liana_res'].shape == (132, 12)
 

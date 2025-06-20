@@ -1,11 +1,13 @@
 import os
 import pathlib
+
 import numpy as np
 import scanpy as sc
-from liana.method.sp._misty._misty_constructs import lrMistyData, genericMistyData
-from liana.method.sp._misty._single_view_models import RandomForestModel, LinearModel, RobustLinearModel
-from liana.testing._sample_anndata import generate_toy_spatial
+
 from liana.method import MistyData
+from liana.method.sp._misty._misty_constructs import genericMistyData, lrMistyData
+from liana.method.sp._misty._single_view_models import LinearModel, RandomForestModel, RobustLinearModel
+from liana.testing._sample_anndata import generate_toy_spatial
 
 test_path = pathlib.Path(__file__).parent
 
@@ -137,7 +139,7 @@ def test_misty_custom():
     misty = MistyData({'intra': intra, 'xdata': xdata, 'ydata': ydata}, verbose=True)
     misty(model=RobustLinearModel, k_cv=25, seed=420)
 
-    misty.uns['interactions'].shape == (120, 4)
+    assert misty.uns['interactions'].shape == (120, 4)
     np.testing.assert_almost_equal(misty.uns['interactions']['importances'].max(), 7.427809495362697, decimal=3)
     np.testing.assert_almost_equal(misty.uns['interactions']['importances'].min(), -2.8430222384873396, decimal=3)
     # the data is random

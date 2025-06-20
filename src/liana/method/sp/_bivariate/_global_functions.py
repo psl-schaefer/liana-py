@@ -3,8 +3,10 @@ from __future__ import annotations
 import numpy as np
 from scipy.stats import norm
 from tqdm import tqdm
+
 from liana._logging import _logg
-from liana.method.sp._utils import _zscore, _spatialdm_weight_norm
+from liana.method.sp._utils import _spatialdm_weight_norm, _zscore
+
 
 class GlobalFunction:
     instances = {}
@@ -53,10 +55,7 @@ class GlobalFunction:
                       global_stat,
                       mask_negatives
                       ):
-        """
-        SpatialDM's global z-score p-value calculation
-
-        """
+        """SpatialDM's global z-score p-value calculation"""
         if not isinstance(weight, np.ndarray):
             weight = np.array(weight.todense())
         spot_n = weight.shape[0]

@@ -1,16 +1,13 @@
-"""
-Preprocessing functions.
-Functions to preprocess the anndata object prior to running any method.
-"""
 from __future__ import annotations
 
 import numpy as np
-from anndata import AnnData
-from typing import Optional
-from pandas import DataFrame, Index
 import scanpy as sc
+from anndata import AnnData
+from pandas import DataFrame, Index
 from scipy.sparse import csr_matrix, isspmatrix_csr
+
 from liana._logging import _logg
+
 
 def assert_covered(
         subset,
@@ -41,7 +38,6 @@ def assert_covered(
     -------
     None
     """
-
     subset = np.asarray(subset)
     is_missing = ~np.isin(subset, superset)
     if subset.size == 0:
@@ -49,7 +45,7 @@ def assert_covered(
         x_missing = 'values in interactions argument'
     else:
         prop_missing = np.sum(is_missing) / len(subset)
-        x_missing = ", ".join([x for x in subset[is_missing]])
+        x_missing = ", ".join(list(subset[is_missing]))
     if prop_missing > prop_missing_allowed:
         msg = (
             f"Please check if appropriate organism/ID type was provided! "
@@ -63,15 +59,15 @@ def assert_covered(
 
 
 def prep_check_adata(adata: AnnData,
-                     groupby: (str | None),
-                     min_cells: (int | None),
-                     groupby_subset: (np.array | None) = None,
-                     use_raw: Optional[bool] = False,
-                     layer: Optional[str] = None,
-                     obsm = None,
-                     uns = None,
+                     groupby: str | None,
+                     min_cells: int | None,
+                     groupby_subset: np.array | None = None,
+                     use_raw: bool | None = False,
+                     layer: str | None = None,
+                     obsm=None,
+                     uns=None,
                      complex_sep='_',
-                     verbose: Optional[bool] = False) -> AnnData:
+                     verbose: bool | None = False) -> AnnData:
     """
     Check if the anndata object is in the correct format and preprocess
 
@@ -158,7 +154,7 @@ def prep_check_adata(adata: AnnData,
             # remove lowly abundant identities
             msk = ~np.isin(adata.obs[[groupby]], lowly_abundant_idents)
             adata = adata[msk]
-            _logg("The following cell identities were excluded: {0}".format(", ".join(lowly_abundant_idents)),
+            _logg("The following cell identities were excluded: {}".format(", ".join(lowly_abundant_idents)),
                  level='warn', verbose=verbose)
 
     check_vars(adata.var_names,
@@ -168,10 +164,9 @@ def prep_check_adata(adata: AnnData,
     adata = adata[:, np.sort(adata.var_names)]
     return adata
 
+
 def check_vars(var_names, complex_sep, verbose=False) -> list:
-    """
-    Raise a warning if `complex_sep` is part of any variable name.
-    """
+    """Raise a warning if `complex_sep` is part of any variable name."""
     var_issues = []
     if complex_sep is not None:
         for name in var_names:
@@ -195,14 +190,14 @@ def filter_resource(resource: DataFrame, var_names: Index) -> DataFrame:
     those without any subunit present are implicitly filtered.
 
     Parameters
-    ---------
+    ----------
     resource
         Resource with 'ligand' and 'receptor' columns
     var_names
         Relevant variables - i.e. the variables to be used downstream
 
     Returns
-    ------
+    -------
     A filtered resource dataframe
     """
     # Remove those without any subunit
@@ -217,7 +212,7 @@ def filter_resource(resource: DataFrame, var_names: Index) -> DataFrame:
 
     # Get those not with all subunits
     missing_comps = missing_comps[np.logical_not(
-        [all([x in var_names for x in entity.split('_')])
+        [all(x in var_names for x in entity.split('_'))
          for entity in missing_comps.all_units]
     )]
     # Filter them

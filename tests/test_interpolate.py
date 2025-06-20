@@ -1,7 +1,9 @@
+import numpy as np
 import pytest
 from anndata import AnnData
-import numpy as np
+
 from liana.utils.interpolate_adata import interpolate_adata
+
 
 def create_test_adata(n_cells, n_genes, spatial_key='spatial'):
     """

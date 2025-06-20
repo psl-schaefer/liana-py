@@ -1,6 +1,8 @@
+import string
+
 import numpy as np
 import pandas as pd
-import string
+
 
 # Function to generate a liana_res sample/example
 def sample_lrs(by_sample=False):

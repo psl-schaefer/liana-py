@@ -1,6 +1,9 @@
 import numpy as np
-from liana._constants import PrimaryColumns as P, DefaultValues as V
+
+from liana._constants import DefaultValues as V
+from liana._constants import PrimaryColumns as P
 from liana._docs import d
+
 
 @d.dedent
 def generate_lr_geneset(resource,

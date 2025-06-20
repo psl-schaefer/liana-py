@@ -1,15 +1,18 @@
-import numpy as np
-import pandas as pd
 from itertools import product
 
-from liana.method._pipe_utils import prep_check_adata, assert_covered, filter_resource, _check_groupby
-from liana.method._pipe_utils._common import _join_stats, _get_props, _get_groupby_subset
+import numpy as np
+import pandas as pd
+
+from liana._constants import DefaultValues as V
+from liana._constants import InternalValues as I
+from liana._constants import PrimaryColumns as P
+from liana._docs import d
+from liana._logging import _logg
+from liana.method._pipe_utils import _check_groupby, assert_covered, filter_resource, prep_check_adata
+from liana.method._pipe_utils._common import _get_groupby_subset, _get_props, _join_stats
 from liana.resource import explode_complexes, filter_reassemble_complexes
 from liana.resource.select_resource import _handle_resource
 
-from liana._logging import _logg
-from liana._docs import d
-from liana._constants import DefaultValues as V, InternalValues as I, PrimaryColumns as P
 
 @d.dedent
 def df_to_lr(adata,
@@ -153,7 +156,7 @@ def df_to_lr(adata,
     # Join Stats to LR
     lr_res = pd.concat(
         [_join_stats(source, target, dedict, resource) for
-            source, target in zip(pairs['source'], pairs['target'])]
+            source, target in zip(pairs['source'], pairs['target'], strict=False)],
     )
 
     # ligand_ or receptor + stat_keys

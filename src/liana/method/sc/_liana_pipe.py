@@ -3,22 +3,25 @@ from __future__ import annotations
 from functools import reduce
 
 import anndata
-import pandas
-import scanpy as sc
-import pandas as pd
 import numpy as np
+import pandas
+import pandas as pd
+import scanpy as sc
+from mudata import MuData
 from scipy.stats import norm
 
-from liana.method._pipe_utils import prep_check_adata, assert_covered, filter_resource
-from liana.method._pipe_utils._common import _join_stats, _get_props, _get_groupby_subset
-from liana.resource.select_resource import _handle_resource
-from liana.resource import explode_complexes, filter_reassemble_complexes
-from liana.method._pipe_utils._get_mean_perms import _get_means_perms, _get_mat_idx
+from liana._constants import CommonColumns as C
+from liana._constants import InternalValues as I
+from liana._constants import MethodColumns as M
+from liana._constants import PrimaryColumns as P
+from liana.method._pipe_utils import assert_covered, filter_resource, prep_check_adata
 from liana.method._pipe_utils._aggregate import _aggregate
-from liana._constants import MethodColumns as M, CommonColumns as C, \
-                            PrimaryColumns as P, InternalValues as I
-from mudata import MuData
+from liana.method._pipe_utils._common import _get_groupby_subset, _get_props, _join_stats
+from liana.method._pipe_utils._get_mean_perms import _get_mat_idx, _get_means_perms
+from liana.resource import explode_complexes, filter_reassemble_complexes
+from liana.resource.select_resource import _handle_resource
 from liana.utils import mdata_to_anndata
+
 
 def liana_pipe(adata: anndata.AnnData,
                groupby: str,
@@ -42,9 +45,11 @@ def liana_pipe(adata: anndata.AnnData,
                _methods: list = None,
                _consensus_opts: list = None,
                _aggregate_method: str | None = None,
-               mdata_kwargs: dict = dict(),
+               mdata_kwargs: dict | None = None,
                ):
     """
+    Single-cell Ligand-receptor inference pipeline.
+
     Parameters
     ----------
     adata
@@ -97,6 +102,9 @@ def liana_pipe(adata: anndata.AnnData,
     A adata frame with ligand-receptor results
 
     """
+    if mdata_kwargs is None:
+        mdata_kwargs = {}
+
     _key_cols = P.primary
 
     if _score is not None:
@@ -317,7 +325,7 @@ def _get_lr(adata, resource, groupby_pairs, relevant_cols, mat_mean, mat_max, de
     # Join Stats
     lr_res = pd.concat(
         [_join_stats(source, target, dedict, resource) for source, target in
-         zip(pairs[P.source], pairs[P.target])]
+         zip(pairs[P.source], pairs[P.target], strict=False)]
     )
 
     if M.mat_mean in relevant_cols:

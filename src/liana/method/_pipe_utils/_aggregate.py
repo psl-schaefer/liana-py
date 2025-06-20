@@ -1,7 +1,8 @@
+from functools import reduce
+
 import numpy as np
 import pandas as pd
-from functools import reduce
-from scipy.stats import rankdata, beta
+from scipy.stats import beta, rankdata
 
 
 def _aggregate(lrs: dict,
@@ -11,9 +12,10 @@ def _aggregate(lrs: dict,
                _key_cols: list = None
                ) -> pd.DataFrame:
     """
+    Function to aggregate the results of all methods into a single DataFrame.
 
     Parameters
-    ---------
+    ----------
     lrs
         a list with results for all methods
     consensus
@@ -31,7 +33,6 @@ def _aggregate(lrs: dict,
     -------
     A long pd.DataFrame with ranked LRs
     """
-
     # join the sc to the whole universe between the methods
     if _key_cols is None:
         _key_cols = ['source', 'target', 'ligand_complex', 'receptor_complex']
@@ -143,7 +144,6 @@ def _rho_scores(rmat, dist_a, dist_b):
     -------
     A vector of pvals as implemented in the RRA method
     """
-
     # Sort values by sources (rows)
     rmat = np.sort(rmat, axis=1)
     # Calc beta cdf across rows
@@ -169,7 +169,6 @@ def _robust_rank_aggregate(rmat) -> np.array:
     -------
     An array with p-values for each row
     """
-
     # 0-1 values depending on relative rank of
     # each interaction divided by the max of each method
     # due to max diffs due to ties

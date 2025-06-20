@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+
 def _sample_dea(adata, groupby):
     nrow = adata.n_vars * 5
 

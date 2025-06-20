@@ -1,18 +1,19 @@
 from __future__ import annotations
 
-from liana.method.sc._Method import MethodMeta
-from liana.method.sc._liana_pipe import liana_pipe
-from liana._docs import d
-from mudata import MuData
-from liana._constants import Keys as K, DefaultValues as V
-
 import anndata as an
+from mudata import MuData
 from pandas import DataFrame
-from typing import Optional
+
+from liana._constants import DefaultValues as V
+from liana._constants import Keys as K
+from liana._docs import d
+from liana.method.sc._liana_pipe import liana_pipe
+from liana.method.sc._Method import MethodMeta
 
 
 class AggregateClass(MethodMeta):
     """LIANA's Method Consensus Class"""
+
     def __init__(self, _SCORE, methods):
         super().__init__(method_name=_SCORE.method_name,
                          complex_cols=[],
@@ -59,23 +60,23 @@ class AggregateClass(MethodMeta):
                  resource_name: str = V.resource_name,
                  expr_prop: float = V.expr_prop,
                  min_cells: int = V.min_cells,
-                 groupby_pairs: Optional[DataFrame] = V.groupby_pairs,
+                 groupby_pairs: DataFrame | None = V.groupby_pairs,
                  base: float = V.logbase,
                  aggregate_method: str = 'rra',
-                 consensus_opts: Optional[list] = None,
+                 consensus_opts: list | None = None,
                  return_all_lrs: bool = V.return_all_lrs,
                  key_added: str = K.uns_key,
-                 use_raw: Optional[bool] = V.use_raw,
-                 layer: Optional[str] = V.layer,
+                 use_raw: bool | None = V.use_raw,
+                 layer: str | None = V.layer,
                  de_method: str = V.de_method,
                  n_perms: int = V.n_perms,
                  seed: int = V.seed,
                  n_jobs: int = 1,
-                 resource: Optional[DataFrame] = V.resource,
-                 interactions: Optional[list] = V.interactions,
-                 mdata_kwargs: dict = dict(),
+                 resource: DataFrame | None = V.resource,
+                 interactions: list | None = V.interactions,
+                 mdata_kwargs: dict | None = None,
                  inplace: bool = V.inplace,
-                 verbose: Optional[bool] = V.verbose,
+                 verbose: bool | None = V.verbose,
                  ):
         """
         Get an aggregate of ligand-receptor scores from multiple methods.
@@ -117,7 +118,8 @@ class AggregateClass(MethodMeta):
         Otherwise, modifies the ``adata`` object with the following key:
             - :attr:`anndata.AnnData.uns` ``['liana_res']`` with the aforementioned DataFrame
         """
-
+        if mdata_kwargs is None:
+            mdata_kwargs = {}
         liana_res = liana_pipe(adata=adata,
                                groupby=groupby,
                                resource_name=resource_name,

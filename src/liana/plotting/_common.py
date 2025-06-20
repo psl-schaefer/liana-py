@@ -4,6 +4,7 @@ import pandas as pd
 from liana._constants import Keys as K
 from liana._logging import _logg
 
+
 def _check_var(liana_res, var_name, var):
     if var is None:
         raise ValueError(f'`{var_name}` must be provided!')

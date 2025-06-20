@@ -1,11 +1,12 @@
-import numpy as np
 import pathlib
-from scanpy.datasets import pbmc68k_reduced
+
+import numpy as np
 from pandas import read_csv
+from scanpy.datasets import pbmc68k_reduced
 
 from liana.method._pipe_utils._get_mean_perms import _get_means_perms, _get_positions
-from liana.method.sc._liana_pipe import _trimean
 from liana.method.sc._cellphonedb import _mean
+from liana.method.sc._liana_pipe import _trimean
 
 test_path = pathlib.Path(__file__).parent
 

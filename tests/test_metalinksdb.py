@@ -1,9 +1,11 @@
-import pandas as pd
-from liana.resource.get_metalinks import get_metalinks, get_metalinks_values, describe_metalinks
-import pathlib
-
 # TODO: replace with link, None should use the link, optionally use path
 import os
+import pathlib
+
+import pandas as pd
+
+from liana.resource.get_metalinks import describe_metalinks, get_metalinks, get_metalinks_values
+
 filepath = pathlib.Path(__file__).parent.absolute()
 os.chdir(filepath)
 

@@ -2,7 +2,9 @@ import numpy as np
 import pandas as pd
 from numpy import random
 from scanpy.datasets import pbmc68k_reduced
+
 from liana.utils.spatial_neighbors import spatial_neighbors
+
 
 def generate_toy_spatial():
     adata = pbmc68k_reduced()
@@ -55,8 +57,9 @@ def generate_toy_adata():
 
 def generate_anndata(sparsity = 0.90, n_ct = 10, n_vars = 2000, n_obs = 1000, seed=1337):
     # TODO, eventually change completely to use this function, inplace of the other ones
-    from scipy.sparse import csr_matrix
     import scanpy as sc
+    from scipy.sparse import csr_matrix
+
     from liana.utils import spatial_neighbors
 
     rng = np.random.default_rng(seed=seed)

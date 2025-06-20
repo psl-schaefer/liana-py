@@ -1,10 +1,11 @@
-import numpy as np
 from itertools import product
 
-from liana.testing._sample_anndata import generate_toy_mdata, generate_toy_spatial, generate_anndata
-from liana.testing._sample_resource import sample_resource
-from liana.method.sp._bivariate._spatial_bivariate import bivariate
+import numpy as np
+
 from liana._constants import DefaultValues as V
+from liana.method.sp._bivariate._spatial_bivariate import bivariate
+from liana.testing._sample_anndata import generate_anndata, generate_toy_mdata, generate_toy_spatial
+from liana.testing._sample_resource import sample_resource
 from liana.utils.transform import zi_minmax
 
 mdata = generate_toy_mdata()
@@ -56,7 +57,7 @@ def test_bivar_nondefault():
     assert global_stats['lee_pvals'].unique()[0] is None
     assert 'morans_pvals' in global_stats.columns
 
-    lrdata.shape == (700, 100)
+    assert lrdata.shape == (680, 100)
     np.testing.assert_almost_equal(np.min(np.min(lrdata.layers['pvals'])), 0.5, decimal=2)
 
 
@@ -75,7 +76,7 @@ def test_masked_spearman():
 
     assert lrdata.var.shape == (90, 8)
     global_res = lrdata.var
-    assert set(['mean','std']).issubset(global_res.columns)
+    assert {'mean','std'}.issubset(global_res.columns)
     np.testing.assert_almost_equal(global_res['mean'].mean(), 0.18438746, decimal=5)
     np.testing.assert_almost_equal(global_res['std'].mean(), 8.498836e-07, decimal=5)
 
@@ -95,7 +96,7 @@ def test_vectorized_spearman():
     np.testing.assert_almost_equal(bdata.layers['pvals'].mean(), 0.6153921568, decimal=3)
 
     global_res = bdata.var
-    assert set(['mean','std']).issubset(global_res.columns)
+    assert {'mean','std'}.issubset(global_res.columns)
     np.testing.assert_almost_equal(global_res['mean'].mean(), 0.0077174, decimal=5)
     np.testing.assert_almost_equal(global_res['std'].mean(), 0.46906388, decimal=5)
 
@@ -153,7 +154,7 @@ def test_cosine_permutation():
 
 
 def test_jaccard_pval_none_cats():
-    lrdata = bivariate(adata, 
+    lrdata = bivariate(adata,
                        local_name='jaccard',
                        global_name='lee',
                        resource_name='consensus',

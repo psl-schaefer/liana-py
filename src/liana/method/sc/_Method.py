@@ -1,22 +1,22 @@
 from __future__ import annotations
 
-from liana.method.sc._liana_pipe import liana_pipe
-from liana._logging import _logg
-from liana._docs import d
-from liana._constants import Keys as K, DefaultValues as V
+import weakref
 
 import anndata as an
 from mudata import MuData
 from pandas import DataFrame, concat
-from typing import Optional
 from tqdm import tqdm
-import weakref
+
+from liana._constants import DefaultValues as V
+from liana._constants import Keys as K
+from liana._docs import d
+from liana._logging import _logg
+from liana.method.sc._liana_pipe import liana_pipe
 
 
 class MethodMeta:
-    """
-    A Class used to store Method Metadata
-    """
+    """A Class used to store Method Metadata"""
+
     # initiate a list to store weak references to all instances
     instances = []
 
@@ -33,6 +33,8 @@ class MethodMeta:
                  reference: str
                  ):
         """
+        Method Metadata Class
+
         Parameters
         ----------
         method_name
@@ -117,7 +119,6 @@ class MethodMeta:
         else the DataFrame is returned.
 
         """
-
         if sample_key not in adata.obs:
             raise ValueError(f"{sample_key} was not found in `adata.obs`.")
 
@@ -160,9 +161,8 @@ class MethodMeta:
 
 
 class Method(MethodMeta):
-    """
-    Ligand-Receptor Method Class
-    """
+    """Ligand-Receptor Method Class"""
+
     def __init__(self, _method):
         super().__init__(method_name=_method.method_name,
                          complex_cols=_method.complex_cols,
@@ -184,22 +184,22 @@ class Method(MethodMeta):
                  resource_name: str = V.resource_name,
                  expr_prop: float = V.expr_prop,
                  min_cells: int = V.min_cells,
-                 groupby_pairs: Optional[DataFrame] = V.groupby_pairs,
+                 groupby_pairs: DataFrame | None = V.groupby_pairs,
                  base: float = V.logbase,
-                 supp_columns: list = V.supp_columns,
+                 supp_columns: list | None = V.supp_columns,
                  return_all_lrs: bool = V.return_all_lrs,
                  key_added: str = K.uns_key,
-                 use_raw: Optional[bool] = V.use_raw,
-                 layer: Optional[str] = V.layer,
+                 use_raw: bool | None = V.use_raw,
+                 layer: str | None = V.layer,
                  de_method: str = V.de_method,
                  n_perms: int = V.n_perms,
                  seed: int = V.seed,
                  n_jobs: int = 1,
-                 resource: Optional[DataFrame] = V.resource,
-                 interactions: Optional[list] = V.interactions,
-                 mdata_kwargs: dict = dict(),
+                 resource: DataFrame | None = V.resource,
+                 interactions: list | None = V.interactions,
+                 mdata_kwargs: dict | None = None,
                  inplace: bool = V.inplace,
-                 verbose: Optional[bool] = V.verbose,
+                 verbose: bool | None = V.verbose,
                  ):
         """
         Run a ligand-receptor method.
@@ -240,6 +240,8 @@ class Method(MethodMeta):
         """
         if supp_columns is None:
             supp_columns = []
+        if mdata_kwargs is None:
+            mdata_kwargs = {}
 
         liana_res = liana_pipe(adata=adata,
                                groupby=groupby,

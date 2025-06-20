@@ -1,10 +1,12 @@
-from mudata import MuData
 import numpy as np
+from mudata import MuData
 from pandas import concat
-from liana.utils import obsm_to_adata
-from liana.method._pipe_utils import prep_check_adata
+
 from liana._constants import DefaultValues as V
 from liana._logging import _check_if_installed
+from liana.method._pipe_utils import prep_check_adata
+from liana.utils import obsm_to_adata
+
 
 def estimate_metalinks(adata,
                        resource,

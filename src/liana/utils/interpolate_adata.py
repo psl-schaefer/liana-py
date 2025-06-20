@@ -1,11 +1,11 @@
 import numpy as np
-from scipy.sparse import lil_matrix, csr_matrix
-from scipy.interpolate import griddata
 from anndata import AnnData
+from scipy.interpolate import griddata
+from scipy.sparse import csr_matrix, lil_matrix
 
-from liana.method._pipe_utils._pre import _choose_mtx_rep
-from liana._docs import d
 from liana._constants import DefaultValues as V
+from liana._docs import d
+from liana.method._pipe_utils._pre import _choose_mtx_rep
 
 
 @d.dedent
@@ -19,10 +19,11 @@ def interpolate_adata(target: AnnData,
                       verbose=V.verbose) -> AnnData:
     """
     Interpolates spatial data from a target AnnData object to a reference AnnData object based on spatial coordinates.
+
     The function creates a new AnnData object where the `.X` attribute is filled with interpolated data using the specified method.
 
     Parameters
-    -----------
+    ----------
     target
         The AnnData object to be interpolated.
     reference
@@ -37,7 +38,7 @@ def interpolate_adata(target: AnnData,
     %(verbose)s
 
     Returns
-    --------
+    -------
     AnnData: A new AnnData object with the same metadata as the reference but with interpolated spatial data in `.X`.
     """
     target_coords = target.obsm[spatial_key]

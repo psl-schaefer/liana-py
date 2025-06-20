@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
+
 from liana.method import estimate_metalinks
 from liana.testing._sample_anndata import generate_toy_adata
+
 
 def test_estimate_metalinks():
     adata = generate_toy_adata()

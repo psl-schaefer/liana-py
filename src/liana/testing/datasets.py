@@ -1,8 +1,10 @@
 import scanpy as sc
 
+
 def kang_2018():
     """
     Utility function to load the data from Kang et al., 2018; GSE96583.
+
     The data contains ~25k PBMCs cells from 8 pooled patient lupus samples, each before and after IFN-beta stimulation.
     Kang, H., Subramaniam, M., Targ, S. et al. Multiplexed droplet single-cell RNA-sequencing using natural genetic variation. Nat Biotechnol 36, 89–94 (2018). https://doi.org/10.1038/nbt.4042
 
@@ -10,7 +12,6 @@ def kang_2018():
 
     Returns
     -------
-
     Returns a largely pre-processed AnnData object with the following attributes:
     Raw counts for ~25k cells; ~15k genes; 16 samples; 2 conditions.
     """

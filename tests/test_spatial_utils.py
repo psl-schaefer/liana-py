@@ -1,11 +1,10 @@
 import numpy as np
-from  scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix
 
 from liana.method.sp._bivariate._global_functions import _global_r
 from liana.method.sp._bivariate._local_functions import LocalFunction
-from liana.utils.spatial_neighbors import spatial_neighbors
-
 from liana.testing._sample_anndata import generate_toy_spatial
+from liana.utils.spatial_neighbors import spatial_neighbors
 
 adata = generate_toy_spatial()
 

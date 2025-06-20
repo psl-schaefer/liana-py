@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 import numpy as np
-
 from anndata import AnnData
 from pandas import DataFrame
 
-from liana.method import process_scores
-from liana._logging import _check_if_installed
+from liana._constants import DefaultValues as V
+from liana._constants import Keys as K
+from liana._constants import PrimaryColumns as P
 from liana._docs import d
-from liana._constants import DefaultValues as V, Keys as K, PrimaryColumns as P
+from liana._logging import _check_if_installed
+from liana.method import process_scores
+
 
 @d.dedent
 def to_tensor_c2c(adata:AnnData=None,
@@ -31,7 +33,6 @@ def to_tensor_c2c(adata:AnnData=None,
 
     Parameters
     ----------
-
     %(adata)s
     %(sample_key)s
     %(score_key)s
@@ -57,7 +58,6 @@ def to_tensor_c2c(adata:AnnData=None,
 
 
     """
-
     # check if cell2cell is installed
     c2c = _check_if_installed("cell2cell")
 
@@ -97,7 +97,7 @@ def to_tensor_c2c(adata:AnnData=None,
         liana_res.loc[~liana_res['lrs_to_keep'], score_key] = non_expressed_fill
 
     # split into dictionary by sample
-    liana_res = {sample:df for sample, df in liana_res.groupby(sample_key)}
+    liana_res = dict(tuple(liana_res.groupby(sample_key)))
 
     if return_dict:
         return liana_res

@@ -1,5 +1,7 @@
-from liana.method.sc._Method import Method, MethodMeta
 from numpy import mean
+
+from liana.method.sc._Method import Method, MethodMeta
+
 
 def _logfc_score(x):
     mean_logfc = mean((x['ligand_logfc'], x['receptor_logfc']), axis=0)

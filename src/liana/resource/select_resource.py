@@ -1,10 +1,11 @@
-from pandas import read_csv
-from numpy import unique
 import pathlib
-from pandas import DataFrame
 
-from liana._logging import _logg
+from numpy import unique
+from pandas import DataFrame, read_csv
+
 from liana._constants import DefaultValues as V
+from liana._logging import _logg
+
 
 def select_resource(resource_name: str = V.resource_name) -> DataFrame:
     """
@@ -67,7 +68,7 @@ def _handle_resource(interactions=None, resource=None, resource_name=None, x_nam
                 print("Using provided `resource`.")
             if not isinstance(resource, DataFrame) or x_name not in resource.columns or y_name not in resource.columns:
                 raise ValueError("If 'interactions' is None, 'resource' must be a valid DataFrame "
-                                 "with columns '{}' and '{}'.".format(x_name, y_name))
+                                 f"with columns '{x_name}' and '{y_name}'.")
             resource = resource.copy()
             resource = resource.dropna(subset=[x_name, y_name]).drop_duplicates()
             resource.index = range(len(resource))

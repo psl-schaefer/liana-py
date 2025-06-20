@@ -1,5 +1,6 @@
-from liana.method.sc._Method import Method, MethodMeta
 from numpy import mean
+
+from liana.method.sc._Method import Method, MethodMeta
 
 
 def _connectome_score(x) -> tuple:

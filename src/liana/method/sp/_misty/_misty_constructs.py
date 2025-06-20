@@ -1,33 +1,32 @@
+from types import ModuleType
+
 import numpy as np
 import pandas as pd
 from anndata import AnnData
 
-from types import ModuleType
-from liana.method._pipe_utils._common import _get_props
-
-from liana.method.sp._misty._Misty import MistyData
-
-from liana.utils.spatial_neighbors import spatial_neighbors
-from liana.method._pipe_utils._pre import _choose_mtx_rep
-
-from liana.resource import select_resource
 from liana.method._pipe_utils import prep_check_adata
+from liana.method._pipe_utils._common import _get_props
+from liana.method._pipe_utils._pre import _choose_mtx_rep
+from liana.method.sp._misty._Misty import MistyData
 from liana.method.sp._utils import _add_complexes_to_var
+from liana.resource import select_resource
+from liana.utils.spatial_neighbors import spatial_neighbors
+
 
 def _make_view(adata, nz_threshold=0.1, add_obs=False, use_raw=False,
                layer=None, connecitivity=None, spatial_key=None, verbose=False):
 
     X = _choose_mtx_rep(adata=adata, use_raw=use_raw, layer=layer, verbose=verbose)
 
-    obsm = dict()
-    obsp = dict()
+    obsm = {}
+    obsp = {}
     if spatial_key is not None:
         if spatial_key not in adata.obsm.keys():
             raise ValueError(f"spatial_key {spatial_key} not found in `obsm`")
         obsm[spatial_key] = adata.obsm[spatial_key]
 
         if connecitivity is not None:
-            obsp = dict()
+            obsp = {}
             obsp[f"{spatial_key}_connectivities"] = connecitivity
 
     obs = adata.obs if add_obs else pd.DataFrame(index=adata.obs.index)
@@ -59,7 +58,6 @@ def genericMistyData(intra,
                      max_neighs = 18,
                      verbose=False
                      ):
-
     """
     Construct a MistyData object from an AnnData object with views as presented in the manuscript.
 
@@ -154,12 +152,11 @@ def genericMistyData(intra,
 def _check_if_squidpy() -> ModuleType:
     try:
         import squidpy as sq
-    except Exception:
-
+    except ImportError:
         raise ImportError(
             'squidpy is not installed. Please install it with: '
             'pip install squidpy'
-        )
+        ) from None
     return sq
 
 
@@ -237,7 +234,7 @@ def lrMistyData(adata,
     resource = resource[(np.isin(resource.ligand, adata.var_names)) &
                         (np.isin(resource.receptor, adata.var_names))]
 
-    views = dict()
+    views = {}
     views['intra'] =  _make_view(adata=adata[:, resource['receptor'].unique()],
                         nz_threshold=0, add_obs=True)
 

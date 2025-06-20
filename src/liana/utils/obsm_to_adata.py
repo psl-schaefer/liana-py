@@ -3,7 +3,9 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from anndata import AnnData
+
 from liana._docs import d
+
 
 @d.dedent
 def obsm_to_adata(adata: AnnData,
@@ -18,7 +20,6 @@ def obsm_to_adata(adata: AnnData,
 
     Parameters
     ----------
-
     %(adata)s
     obsm_key
         `.osbm` key to extract.
@@ -33,7 +34,6 @@ def obsm_to_adata(adata: AnnData,
     -------
     An AnnData object with the values stored in X.
     """
-
     if df is None:
         df = adata.obsm[obsm_key]
 

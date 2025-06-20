@@ -1,6 +1,7 @@
 import numpy as np
+
+from liana.multi import estimate_elbow, nmf
 from liana.testing._sample_anndata import generate_toy_adata
-from liana.multi import nmf, estimate_elbow
 
 adata = generate_toy_adata()
 adata.X = np.abs(adata.X)

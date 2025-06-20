@@ -1,10 +1,12 @@
-from plotnine import ggplot, aes, geom_point, theme_minimal, labs, theme
 import anndata
 import pandas as pd
+from plotnine import aes, geom_point, ggplot, labs, theme, theme_minimal
 
-from liana._logging import _logg
+from liana._constants import DefaultValues as V
+from liana._constants import Keys as K
 from liana._docs import d
-from liana._constants import Keys as K, DefaultValues as V
+from liana._logging import _logg
+
 
 @d.dedent
 def connectivity(adata: anndata.AnnData,
@@ -32,7 +34,6 @@ def connectivity(adata: anndata.AnnData,
     A `plotnine.ggplot` instance
 
     """
-
     assert connectivity_key in list(adata.obsp.keys())
     assert spatial_key in adata.obsm_keys()
 

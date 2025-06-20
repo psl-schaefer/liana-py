@@ -1,6 +1,7 @@
-from liana.resource import translate_column, translate_resource, get_hcop_orthologs, select_resource
-
 import pandas as pd
+
+from liana.resource import get_hcop_orthologs, select_resource, translate_column, translate_resource
+
 
 def test_complex_cases():
     map_df = pd.DataFrame(

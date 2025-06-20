@@ -1,6 +1,5 @@
 import liana.plotting as pl
-from liana.testing import generate_toy_spatial
-from liana.testing import _sample_target_metrics, _sample_interactions
+from liana.testing import _sample_interactions, _sample_target_metrics, generate_toy_spatial
 
 adata = generate_toy_spatial()
 adata.uns['target_metrics'] = _sample_target_metrics()

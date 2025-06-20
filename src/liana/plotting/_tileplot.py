@@ -1,11 +1,13 @@
-import plotnine as p9
-from typing import Union, List, Tuple
+
 import anndata as ad
 import pandas as pd
+import plotnine as p9
 
-from liana.plotting._common import _prep_liana_res, _get_top_n, _check_var, _filter_by
+from liana._constants import DefaultValues as V
+from liana._constants import Keys as K
 from liana._docs import d
-from liana._constants import Keys as K, DefaultValues as V
+from liana.plotting._common import _check_var, _filter_by, _get_top_n, _prep_liana_res
+
 
 @d.dedent
 def tileplot(adata: ad.AnnData = None,
@@ -13,10 +15,10 @@ def tileplot(adata: ad.AnnData = None,
              fill: str = None,
              label: str = None,
              label_fun: callable = None,
-             source_labels: Union[str, List[str]] = None,
-             target_labels: Union[str, List[str]] = None,
-             ligand_complex: Union[str, List[str]] = None,
-             receptor_complex: Union[str, List[str]] = None,
+             source_labels: str | list[str] = None,
+             target_labels: str | list[str] = None,
+             ligand_complex: str | list[str] = None,
+             receptor_complex: str | list[str] = None,
              uns_key: str = K.uns_key,
              top_n: int = None,
              orderby: str = None,
@@ -26,7 +28,7 @@ def tileplot(adata: ad.AnnData = None,
              source_title=None,
              target_title=None,
              cmap: str = V.cmap,
-             figure_size: Tuple[float, float] = (5, 5),
+             figure_size: tuple[float, float] = (5, 5),
              label_size: int = 12,
              return_fig: bool = V.return_fig
              ):

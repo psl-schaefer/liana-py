@@ -1,12 +1,15 @@
 import os
 import sqlite3
+
 import pandas as pd
-from typing import Optional, List
-from liana._logging import _logg, _check_if_installed
+
+from liana._logging import _check_if_installed, _logg
+
 
 def _download_metalinksdb(verbose=True):
     """
     Ensures the Metalinksdb is downloaded and available for use.
+
     If the Metalinks database is not present in the current working directory, it downloads it.
 
     Returns
@@ -32,24 +35,27 @@ def _download_metalinksdb(verbose=True):
 
     return db_path
 
+
 def _format_clauses(input_data, column_name, table_ref, where_clauses):
     if input_data:
         formatted_str = ", ".join([f"'{i}'" for i in input_data])
         where_clauses.append(f"{table_ref}.{column_name} IN ({formatted_str})")
 
-def get_metalinks(db_path: Optional[str] = None,
-                  types: Optional[List[str]] = None,
-                  cell_location: Optional[List[str]] = None,
-                  tissue_location: Optional[List[str]] = None,
-                  biospecimen_location: Optional[List[str]] = None,
-                  disease: Optional[List[str]] = None,
-                  pathway: Optional[List[str]] = None,
-                  hmdb_ids: Optional[List[str]] = None,
-                  uniprot_ids: Optional[List[str]] = None,
-                  source: Optional[List[str]] = None
+
+def get_metalinks(db_path: str | None = None,
+                  types: list[str] | None = None,
+                  cell_location: list[str] | None = None,
+                  tissue_location: list[str] | None = None,
+                  biospecimen_location: list[str] | None = None,
+                  disease: list[str] | None = None,
+                  pathway: list[str] | None = None,
+                  hmdb_ids: list[str] | None = None,
+                  uniprot_ids: list[str] | None = None,
+                  source: list[str] | None = None
                   ):
     """
     Fetches edges of metabolite-proteins with specified annotations, applying filters if they are not None.
+
     Allows filtering by lists of hmdb and uniprot IDs and avoids duplicate column names, and returns the results as a pandas DataFrame.
     Filters are applied using INNER JOINs and WHERE clauses - i.e. the results are the intersection of the filters.
 
@@ -75,11 +81,9 @@ def get_metalinks(db_path: Optional[str] = None,
         Desired UniProt IDs.
 
     Returns
-    ----------
-
+    -------
     A pandas DataFrame containing the query results without the source column.
     """
-
     if db_path is None:
         db_path = _download_metalinksdb()
     conn = sqlite3.connect(db_path)
@@ -149,7 +153,7 @@ def get_metalinks(db_path: Optional[str] = None,
     return df
 
 
-def get_metalinks_values(table_name, column_name, db_path: Optional[str] = None):
+def get_metalinks_values(table_name, column_name, db_path: str | None = None):
     """
     Fetches distinct values from a specified column in a specified table.
 
@@ -180,7 +184,7 @@ def get_metalinks_values(table_name, column_name, db_path: Optional[str] = None)
     return [value[0] for value in distinct_values]
 
 
-def describe_metalinks(db_path: Optional[str] = None, return_output: bool = False):
+def describe_metalinks(db_path: str | None = None, return_output: bool = False):
     """
     Prints the schema information and foreign key details for all tables in the specified SQLite database.
 

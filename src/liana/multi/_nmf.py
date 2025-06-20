@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from sklearn.decomposition import NMF
 import numpy as np
 import pandas as pd
 import plotnine as p9
+from anndata import AnnData
+from sklearn.decomposition import NMF
 from tqdm import tqdm
 
-from anndata import AnnData
-from liana.method._pipe_utils._pre import _choose_mtx_rep
-from liana._logging import _logg, _check_if_installed
 from liana._docs import d
+from liana._logging import _check_if_installed, _logg
+from liana.method._pipe_utils._pre import _choose_mtx_rep
+
 
 @d.dedent
 def nmf(adata: AnnData=None,

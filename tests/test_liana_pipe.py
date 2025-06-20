@@ -1,13 +1,13 @@
 import pathlib
-from scanpy.datasets import pbmc68k_reduced
-from pandas.testing import assert_frame_equal
-from pandas import read_csv
-import numpy as np
-from pandas import DataFrame
 from itertools import product
 
-from liana.method.sc._liana_pipe import liana_pipe, _expm1_base, _calc_log2fc
+import numpy as np
+from pandas import DataFrame, read_csv
+from pandas.testing import assert_frame_equal
+from scanpy.datasets import pbmc68k_reduced
+
 from liana._constants import DefaultValues as V
+from liana.method.sc._liana_pipe import _calc_log2fc, _expm1_base, liana_pipe
 
 test_path = pathlib.Path(__file__).parent
 adata = pbmc68k_reduced()
@@ -37,11 +37,11 @@ def test_liana_pipe_defaults():
 
     assert 'prop_min' in all_defaults.columns
     all_defaults = all_defaults.sort_values(by=list(all_defaults.columns))
-    
+
     exp_defaults = read_csv(test_path.joinpath("data", "all_defaults.csv"), index_col=0)
     exp_defaults = exp_defaults.sort_values(by=list(all_defaults.columns))
     exp_defaults.index = all_defaults.index
-    
+
     assert_frame_equal(all_defaults, exp_defaults, check_dtype=False,
                        check_exact=False, check_index_type=False, rtol=1e-3)
 
@@ -71,7 +71,7 @@ def test_liana_pipe_not_defaults():
     assert all(np.isin(['lrs_to_keep'], not_defaults.columns))
     assert all(np.isin(['ligand_pvals', 'receptor_pvals'], not_defaults.columns))
     not_defaults = not_defaults.sort_values(list(not_defaults.columns))
-    
+
     exp_defaults = read_csv(test_path.joinpath("data/not_defaults.csv"), index_col=0)
     exp_defaults = exp_defaults.sort_values(list(not_defaults.columns))
     exp_defaults.index = not_defaults.index
@@ -104,7 +104,7 @@ def test_liana_pipe_subset():
                         interactions=V.interactions,
                         )
 
-    subset.shape == (46, 21)
+    assert subset.shape == (46, 23)
 
 
 def test_expm1_fun():

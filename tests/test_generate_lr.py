@@ -1,7 +1,7 @@
+import decoupler as dc
+
 from liana.resource import select_resource
 from liana.resource._resource_utils import generate_lr_geneset
-
-import decoupler as dc
 
 
 def test_generate_lr_resource():
@@ -10,7 +10,7 @@ def test_generate_lr_resource():
     net = dc.op.progeny(top=1000, organism='human', thr_padj=1)
     resource = select_resource('consensus')
     lr_net = generate_lr_geneset(resource, net)
-    assert set(lr_net.columns) == set(['interaction', 'weight', 'source'])
+    assert set(lr_net.columns) == {'interaction', 'weight', 'source'}
     assert lr_net.shape[0] == 170
     assert lr_net['interaction'].nunique() == 153
     assert lr_net['source'].nunique() == 14

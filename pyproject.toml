@@ -31,6 +31,7 @@ dependencies = [
   "docrep>=0.3.1",
   "plotnine>=0.10.1",
   "session-info2",
+  "scipy>=1.11.1,<1.13.0",
 ]
 [project.optional-dependencies]
 dev = [
@@ -40,7 +41,7 @@ dev = [
   "bumpversion>=0.6.0",
   "highspy>=1.9.0",
 ]
-extra-requirements = [
+extras = [
   "decoupler>=1.5.1",
   "omnipath>=1.0.6",
   "pydeseq2>=0.3.5",
@@ -101,7 +102,7 @@ deps = [ "pre" ]
 python = [ "3.13" ]
 
 [tool.hatch.envs.hatch-test]
-features = [ "test", "extra-requirements" ]
+features = [ "test", "extras" ]
 
 [tool.hatch.envs.hatch-test.overrides]
 # If the matrix variable `deps` is set to "pre",

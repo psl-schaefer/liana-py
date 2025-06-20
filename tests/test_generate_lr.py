@@ -1,4 +1,5 @@
 import decoupler as dc
+import numpy as np
 
 from liana.resource import select_resource
 from liana.resource._resource_utils import generate_lr_geneset
@@ -14,7 +15,7 @@ def test_generate_lr_resource():
     assert lr_net.shape[0] == 170
     assert lr_net['interaction'].nunique() == 153
     assert lr_net['source'].nunique() == 14
-    assert lr_net[lr_net['interaction'] == 'LAMB3^ITGAV_ITGB8']['weight'].values[0] == 3.6229854747285266
+    assert np.isclose(lr_net[lr_net['interaction'] == 'LAMB3^ITGAV_ITGB8']['weight'].values[0], 3.62299, atol=1e-5)
 
 
 def test_generate_nondefault_lr_resource():

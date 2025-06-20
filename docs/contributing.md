@@ -32,7 +32,7 @@ If you prefer managing environments manually, you can use `pip`:
 cd liana
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -e ".[dev,test,doc]"
+pip install -e ".[dev,test,doc,extras]"
 ```
 
 ::::

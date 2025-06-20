@@ -65,9 +65,9 @@ class SpatialBivariate():
         %(n_perms)s
         %(seed)s
         nz_prop: float
-            Minimum proportion of non-zero values for each features. For example, if working with gene expression data,
-            this would be the proportion of cells expressing a gene. Both features must have a proportion greater than
-            `nz_prop` to be considered in the analysis.
+            Minimum proportion of non-zero values for each features. For example, if working with gene
+            expression data, this would be the proportion of cells expressing a gene. Both features must
+            have a proportion greater than `nz_prop` to be considered in the analysis.
         complex_sep: str
             Separator to use for complex names.
         xy_sep: str
@@ -103,7 +103,8 @@ class SpatialBivariate():
         Returns
         -------
         An AnnData object, (optionally) with multiple layers which correspond categories/p-values, and the
-        actual scores are stored in `.X`. Moreover, global stats are stored in ``.var``.
+        actual scores are stored in `.X`. 
+        Moreover, global stats are stored in ``.var``.
 
         """
 
@@ -356,5 +357,6 @@ class SpatialBivariate():
                 "reference":function.reference,
                 }
         return pd.DataFrame(funs).T.reset_index().rename(columns={"index":"name"})
+
 
 bivariate = SpatialBivariate()

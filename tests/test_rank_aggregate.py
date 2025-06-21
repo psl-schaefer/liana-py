@@ -59,14 +59,18 @@ def test_aggregate_all():
 
 def test_aggregate_by_sample():
 
-    rank_aggregate.by_sample(adata, groupby='bulk_labels', use_raw=True, return_all_lrs=True, sample_key='sample', key_added='liana_by_sample')
+    rank_aggregate.by_sample(adata, groupby='bulk_labels', use_raw=True,
+                             return_all_lrs=True, sample_key='sample', n_perms=2,
+                             key_added='liana_by_sample')
     lr_by_sample = adata.uns['liana_by_sample']
 
     assert 'sample' in lr_by_sample.columns
     assert lr_by_sample.shape == (10836, 14)
 
 def test_aggregate_no_perms():
-    rank_aggregate(adata, groupby='bulk_labels', use_raw=True, return_all_lrs=True, key_added='all_res', n_perms=None)
+    rank_aggregate(adata, groupby='bulk_labels', use_raw=True,
+                   return_all_lrs=True, key_added='all_res',
+                   n_perms=None)
     assert adata.uns['all_res'].shape == (4200, 11)
 
 def test_aggregate_on_mdata():

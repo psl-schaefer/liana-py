@@ -96,11 +96,6 @@ scripts.clean = "git clean -fdX -- {args:docs}"
 deps = [ "stable" ]
 python = [ "3.10", "3.12" ]
 
-# Test the newest supported Python version also with pre-release deps
-[[tool.hatch.envs.hatch-test.matrix]]
-deps = [ "pre" ]
-python = [ "3.12" ]
-
 [tool.hatch.envs.hatch-test]
 features = [ "test", "extras" ]
 

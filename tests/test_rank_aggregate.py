@@ -38,9 +38,8 @@ def test_aggregate_specs():
 
 def test_aggregate_res():
     adata = generate_toy_adata()
-    adata = adata.raw.to_adata()
     lr_res = rank_aggregate(adata, groupby='bulk_labels', n_perms=2,
-                   use_raw=False, seed=1337, inplace=False)
+                            seed=1337, inplace=False)
     lr_exp = read_csv(test_path.joinpath(path.join("data", "aggregate_rank_rest.csv")), index_col=0)
     lr_res = lr_res.sort_values(by=list(lr_res.columns))
     lr_exp = lr_exp.sort_values(by=list(lr_res.columns))

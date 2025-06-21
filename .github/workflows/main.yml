@@ -73,8 +73,6 @@ jobs:
           cache-dependency-glob: pyproject.toml
       - name: create hatch environment
         run: uvx hatch env create ${{ matrix.env.name }}
-      - name: Ensure environment is resolved
-        run: uvx hatch run ${{ matrix.env.name }}:python -c "import sys"
       - name: run tests using hatch
         env:
           MPLBACKEND: agg
@@ -85,14 +83,9 @@ jobs:
         run: uvx hatch run ${{ matrix.env.name }}:coverage xml
       - name: Upload coverage
         uses: codecov/codecov-action@v5.4.3
-      - name: Print pip freeze
+      - name: Print session info after importing liana
         if: always()
-        run: uvx hatch run ${{ matrix.env.name }}:pip freeze
-      - name: Print key package versions
-        if: always()
-        run: |
-          uvx hatch run ${{ matrix.env.name }}:python -c "import importlib\npkgs = [\n    'anndata', 'mudata', 'scanpy', 'numba', 'tqdm', 'docrep', 'plotnine', 'session_info2',\n    'decoupler', 'omnipath', 'pydeseq2', 'cell2cell', 'kneed', 'muon', 'mofax', 'mofapy2',\n    'requests', 'corneto', 'cvxpy_base', 'PySCIPOpt', 'numpy'\n]\nfor pkg in pkgs:\n    try:\n        m = importlib.import_module(pkg.replace('-', '_').replace('.', '_'))\n        print(f'{pkg}:', getattr(m, '__version__', 'no __version__'))\n    except Exception as e:\n        print(f'{pkg}: not installed ({{e}})')\n"
-
+        run: uvx hatch run ${{ matrix.env.name }}:python -c "import liana; import session_info2; session_info2.show()"
   # Check that all tests defined above pass. This makes it easy to set a single "required" test in branch
   # protection instead of having to update it frequently. See https://github.com/re-actors/alls-green#why.
   check:

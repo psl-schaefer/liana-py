@@ -14,7 +14,7 @@ maintainers = [
 authors = [
   { name = "Daniel Dimitrov" },
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.13"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
@@ -31,7 +31,6 @@ dependencies = [
   "docrep>=0.3.1",
   "plotnine>=0.10.1",
   "session-info2",
-  "scipy<1.13.0",
 ]
 [project.optional-dependencies]
 dev = [
@@ -94,12 +93,12 @@ scripts.clean = "git clean -fdX -- {args:docs}"
 # Test the lowest and highest supported Python versions with normal deps
 [[tool.hatch.envs.hatch-test.matrix]]
 deps = [ "stable" ]
-python = [ "3.10", "3.13" ]
+python = [ "3.10", "3.12" ]
 
 # Test the newest supported Python version also with pre-release deps
 [[tool.hatch.envs.hatch-test.matrix]]
 deps = [ "pre" ]
-python = [ "3.13" ]
+python = [ "3.12" ]
 
 [tool.hatch.envs.hatch-test]
 features = [ "test", "extras" ]

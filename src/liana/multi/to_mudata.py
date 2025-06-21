@@ -91,8 +91,6 @@ def adata_to_views(
     for view in views:
         # filter AnnData to view
         temp = adata[adata.obs[groupby] == view].copy()
-        # assign view to var_names
-        temp.var_names = view + view_sep + temp.var_names
 
         padata = dc.pp.pseudobulk(
             temp,
@@ -100,6 +98,8 @@ def adata_to_views(
             groups_col=None,
             **psbulk_kwargs
         )
+        # assign view to var_names
+        padata.var_names = view + view_sep + padata.var_names
 
         if filter_samples_kwargs:
             dc.pp.filter_samples(

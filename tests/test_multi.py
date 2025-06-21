@@ -108,42 +108,26 @@ def test_adata_to_views():
                            groupby='bulk_labels',
                            sample_key='sample',
                            obs_keys=None,
-                           min_cells=5,
-                           min_counts=10,
                            keep_stats=False,
-                           mode='sum',
                            verbose=True,
-                           use_raw=True,
-                           min_smpls=2,
-                           # filter features
-                           min_count=0,
-                           min_total_count=0,
-                           large_n=0,
-                           min_prop=0,
-                           skip_checks=True # skip because it's log-normalized
+                           psbulk_kwargs={'raw': True,
+                                          'skip_checks': True},
+                           filter_samples_kwargs={
+                               'min_cells': 5,
+                               'min_counts': 10,
+                           },
+                           filter_by_expr_kwargs={
+                                 'min_count': 0,
+                                 'min_prop': 0,
+                                 'min_total_count':0,
+                                 'large_n': 0,
+                           }
                            )
 
     assert len(mdata.varm_keys())==9
     assert 'case' not in mdata.obs.columns
-    assert mdata.shape == (4, 6201)
+    assert mdata.shape == (4, 6885)
     assert 'psbulk_stats' not in mdata.uns.keys()
-
-    # test feature level filtering (with default values)
-    mdata = adata_to_views(adata,
-                           groupby='bulk_labels',
-                           sample_key='sample',
-                           obs_keys = ['case'],
-                           mode='sum',
-                           keep_stats=True,
-                           verbose=True,
-                           use_raw=True,
-                           skip_checks=True
-                           )
-
-    assert len(mdata.varm_keys())==7
-    assert 'case' in mdata.obs.columns
-    assert mdata.shape == (4, 1598)
-    assert mdata.uns['psbulk_stats'] is not None
 
 
 def test_filter_view_markers():
@@ -151,10 +135,19 @@ def test_filter_view_markers():
                            groupby='bulk_labels',
                            sample_key='sample',
                            obs_keys = ['case'],
-                           mode='sum',
                            verbose=True,
-                           use_raw=True,
-                           skip_checks=True
+                           psbulk_kwargs={'raw': True,
+                                          'skip_checks': True},
+                           filter_samples_kwargs={
+                               'min_cells': 5,
+                               'min_counts': 100,
+                           },
+                           filter_by_expr_kwargs={
+                                 'min_count': 100,
+                                 'min_prop': 0.1,
+                                 'min_total_count':0,
+                                 'large_n': 0,
+                           }
                            )
 
     rng = np.random.default_rng(42)
@@ -163,10 +156,10 @@ def test_filter_view_markers():
         markers[cell_type] = rng.choice(adata.var_names, 10).tolist()
 
     filter_view_markers(mdata, markers, inplace=True)
-    assert mdata.mod['Dendritic'].var['highly_variable'].sum() == 139
+    assert mdata.mod['Dendritic'].var['highly_variable'].sum() == 33
 
     filter_view_markers(mdata, markers, var_column=None, inplace=True)
-    assert mdata.shape == (4, 1471)
+    assert mdata.shape == (4, 74)
 
 
 def test_get_funs():

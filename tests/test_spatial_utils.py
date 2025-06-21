@@ -76,10 +76,14 @@ def test_local_permutation_pvals():
 
 def test_local_zscore_pvals():
     local_truth = rng.normal(size=(10, 10))
-    actual = local_morans._zscore_pvals(x_mat=x_mat, y_mat=y_mat,
-                                        weight=weight, local_truth=local_truth,
+    actual = local_morans._zscore_pvals(x_mat=x_mat,
+                                        y_mat=y_mat,
+                                        weight=weight,
+                                        local_truth=local_truth,
                                         mask_negatives=mask_negatives)
-    np.testing.assert_almost_equal(actual.mean(axis=0)[0:3], np.array([0.51747, 0.47383, 0.49125]), decimal=5)
+    np.testing.assert_almost_equal(actual.mean(axis=0)[0:3],
+                                   np.array([0.51747, 0.47383, 0.49125]),
+                                   decimal=5)
     assert actual.shape == (10, 10)
 
 

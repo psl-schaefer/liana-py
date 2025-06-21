@@ -14,7 +14,7 @@ maintainers = [
 authors = [
   { name = "Daniel Dimitrov" },
 ]
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.10,<3.12"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
@@ -25,27 +25,25 @@ classifiers = [
 dependencies = [
   "anndata>=0.7.4",
   "mudata",
-  "scanpy==1.11.2",
-  "numba>=0.61.2",
+  "scanpy",
+  "numba",
   "tqdm>=4.0",
   "docrep>=0.3.1",
   "plotnine>=0.10.1",
   "session-info2",
-  "pandas==2.3.0",
-  "statsmodels==0.14.4",
-  "numpy>=2.2.6",
-  "joblib>=1.5.1"
+  "pandas",
 ]
-[project.optional-dependencies]
-dev = [
+
+optional-dependencies.dev = [
   "pre-commit>=3.0.0",
   "twine>=4.0.2",
-  "pytest<=6.0",
+  "pytest>=8.0",
   "bumpversion>=0.6.0",
   "highspy>=1.9.0",
 ]
-extras = [
-  "decoupler>=1.5.1",
+
+optional-dependencies.extras = [
+  "decoupler>=1.6.0",
   "omnipath>=1.0.6",
   "pydeseq2>=0.3.5",
   "cell2cell",
@@ -58,12 +56,12 @@ extras = [
   "cvxpy-base>=1.6.0",
   "PySCIPOpt>=5.2.1",
 ]
-doc = [
+
+optional-dependencies.doc = [
   "docutils>=0.8,!=0.18.*,!=0.19.*",
   "ipykernel",
   "ipython",
   "myst-nb>=1.1",
-  # Until pybtex >0.24.0 releases: https://bitbucket.org/pybtex-devs/pybtex/issues/169/
   "setuptools",
   "sphinx>=8.1",
   "sphinx-autodoc-typehints",
@@ -74,15 +72,15 @@ doc = [
   "sphinxext-opengraph",
   "pre-commit",
 ]
-test = [
+
+optional-dependencies.test = [
   "coverage",
   "pytest",
 ]
-# https://docs.pypi.org/project_metadata/#project-urls
-[project.urls]
-Documentation = "https://liana.readthedocs.io/"
-Homepage = "https://liana-py.readthedocs.io"
-Source = "https://github.com/saezlab/liana-py"
+
+urls.Documentation = "https://liana.readthedocs.io/"
+urls.Homepage = "https://liana-py.readthedocs.io"
+urls.Source = "https://github.com/saezlab/liana-py"
 
 [tool.hatch.envs.default]
 installer = "uv"
@@ -94,10 +92,9 @@ scripts.build = "sphinx-build -M html docs docs/_build -W {args}"
 scripts.open = "python -m webbrowser -t docs/_build/html/index.html"
 scripts.clean = "git clean -fdX -- {args:docs}"
 
-# Test the lowest and highest supported Python versions with normal deps
 [[tool.hatch.envs.hatch-test.matrix]]
 deps = [ "stable" ]
-python = [ "3.10", "3.12" ]
+python = [ "3.10", "3.11" ]
 
 [tool.hatch.envs.hatch-test]
 features = [ "test", "extras" ]
@@ -127,6 +124,7 @@ lint.select = [
   "UP",     # pyupgrade
   "W",      # Warning detected by Pycodestyle
 ]
+
 lint.ignore = [
   "B008", # Errors from function calls in argument defaults. These are fine when the result is immutable.
   "D100", # Missing docstring in public module
@@ -142,6 +140,7 @@ lint.ignore = [
   "E731", # Do not assign a lambda expression, use a def -> lambda expression assignments are convenient
   "E741", # allow I, O, l as variable names -> I is the identity matrix
 ]
+
 lint.per-file-ignores."*/__init__.py" = [ "F401" ]
 lint.per-file-ignores."docs/*" = [ "I" ]
 lint.per-file-ignores."tests/*" = [ "D" ]

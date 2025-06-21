@@ -21,6 +21,7 @@ def test_consensus_meta():
     assert rank_aggregate.specificity == 'specificity_rank'
     assert rank_aggregate.method_name == 'Rank_Aggregate'
 
+
 def test_aggregate_specs():
     specificity_specs = {'CellPhoneDB': ('cellphone_pvals', True),
                          'Connectome': ('scaled_weight', False),
@@ -39,7 +40,7 @@ def test_aggregate_specs():
 
 
 def test_aggregate_res():
-    lr_res = rank_aggregate(adata, groupby='bulk_labels', use_raw=True, n_perms=2, inplace=False)
+    lr_res = rank_aggregate(adata, groupby='bulk_labels', n_perms=2, inplace=False)
     lr_exp = read_csv(test_path.joinpath(path.join("data", "aggregate_rank_rest.csv")), index_col=0)
     lr_res = lr_res.sort_values(by=list(lr_res.columns))
     lr_exp = lr_exp.sort_values(by=list(lr_res.columns))
@@ -51,7 +52,6 @@ def test_aggregate_all():
     rank_aggregate(adata,
                    groupby='bulk_labels',
                    aggregate_method='mean',
-                   use_raw=True,
                    return_all_lrs=True,
                    key_added='all_res')
     assert adata.uns['all_res'].shape == (4200, 13)
@@ -59,8 +59,8 @@ def test_aggregate_all():
 
 def test_aggregate_by_sample():
 
-    rank_aggregate.by_sample(adata, groupby='bulk_labels', use_raw=True,
-                             return_all_lrs=True, sample_key='sample', n_perms=2,
+    rank_aggregate.by_sample(adata, groupby='bulk_labels',
+                             return_all_lrs=True, sample_key='sample',
                              key_added='liana_by_sample')
     lr_by_sample = adata.uns['liana_by_sample']
 
@@ -68,7 +68,7 @@ def test_aggregate_by_sample():
     assert lr_by_sample.shape == (10836, 14)
 
 def test_aggregate_no_perms():
-    rank_aggregate(adata, groupby='bulk_labels', use_raw=True,
+    rank_aggregate(adata, groupby='bulk_labels',
                    return_all_lrs=True, key_added='all_res',
                    n_perms=None)
     assert adata.uns['all_res'].shape == (4200, 11)

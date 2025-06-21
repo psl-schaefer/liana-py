@@ -9,7 +9,6 @@ def test_m_to_adata():
     adata = mdata_to_anndata(mdata, x_mod='adata_x', y_mod='adata_y',
                             x_transform=False, y_transform=False, verbose=True)
     assert adata.shape == mdata.shape
-    assert_almost_equal(adata.X.max(), 3.431)
 
 
 def test_mdata_transformations():

@@ -49,21 +49,20 @@ def test_aggregate_res():
 
 def test_aggregate_all():
     adata = generate_toy_adata()
-    adata = adata.raw.to_adata()
     rank_aggregate(adata,
                    groupby='bulk_labels',
                    aggregate_method='mean',
                    return_all_lrs=True,
-                   use_raw=False,
                    seed=1,
                    n_perms=2,
+                   n_jobs=1,
                    key_added='all_res')
     assert adata.uns['all_res'].shape == (4200, 13)
 
 
 def test_aggregate_by_sample():
     adata = generate_toy_adata()
-    rank_aggregate.by_sample(adata, groupby='bulk_labels',
+    rank_aggregate.by_sample(adata, groupby='bulk_labels', n_jobs=1, n_perms=2,
                              return_all_lrs=True, sample_key='sample',
                              key_added='liana_by_sample')
     lr_by_sample = adata.uns['liana_by_sample']

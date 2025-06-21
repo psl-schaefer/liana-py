@@ -95,8 +95,6 @@ def _rank_aggregate(lr_res, specs, aggregate_method) -> np.array:
         score_name = specs[spec][0]
         ascending = specs[spec][1]
 
-        assert score_name in lr_res.columns, \
-            f"Score name {score_name} not found in the DataFrame columns: {lr_res.columns.tolist()}"
         if ascending:
             lr_res.loc[:, score_name] = rankdata(lr_res.loc[:, score_name], method='average')
         else:

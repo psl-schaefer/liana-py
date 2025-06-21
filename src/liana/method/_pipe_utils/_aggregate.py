@@ -94,9 +94,9 @@ def _rank_aggregate(lr_res, specs, aggregate_method) -> np.array:
         ascending = specs[spec][1]
 
         if ascending:
-            lr_res[score_name] = rankdata(lr_res[score_name], method='average')
+            lr_res.loc[:, score_name] = rankdata(lr_res.loc[:, score_name], method='average')
         else:
-            lr_res[score_name] = rankdata(lr_res[score_name] * -1, method='average')
+            lr_res.loc[:, score_name] = rankdata(lr_res.loc[:, score_name] * -1, method='average')
 
     # get only the relevant ranks as a mat (joins order the keys)
     scores = list({specs[s][0] for s in specs})

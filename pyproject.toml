@@ -45,6 +45,7 @@ extras = [
   "omnipath>=1.0.6",
   "pydeseq2>=0.3.5",
   "cell2cell",
+  "kneed>=0.7.0",
   "muon",
   "mofax",
   "mofapy2>=0.7.0",

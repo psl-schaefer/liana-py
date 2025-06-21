@@ -83,9 +83,6 @@ jobs:
         run: uvx hatch run ${{ matrix.env.name }}:coverage xml
       - name: Upload coverage
         uses: codecov/codecov-action@v5.4.3
-      - name: Print session info after importing liana
-        if: always()
-        run: uvx hatch run ${{ matrix.env.name }}:python -c "import liana; from session_info2 import session_info; session_info()"
   # Check that all tests defined above pass. This makes it easy to set a single "required" test in branch
   # protection instead of having to update it frequently. See https://github.com/re-actors/alls-green#why.
   check:

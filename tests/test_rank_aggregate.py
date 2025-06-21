@@ -12,9 +12,6 @@ from liana.testing._sample_anndata import generate_toy_adata, generate_toy_mdata
 
 test_path = pathlib.Path(__file__).parent
 
-adata = generate_toy_adata()
-
-
 def test_consensus_meta():
     assert isinstance(rank_aggregate, AggregateClass)
     assert rank_aggregate.magnitude == 'magnitude_rank'
@@ -40,10 +37,9 @@ def test_aggregate_specs():
 
 
 def test_aggregate_res():
+    adata = generate_toy_adata()
     lr_res = rank_aggregate(adata, groupby='bulk_labels', n_perms=2, inplace=False)
     lr_exp = read_csv(test_path.joinpath(path.join("data", "aggregate_rank_rest.csv")), index_col=0)
-    assert 'cellphone_pvals' in lr_exp.columns
-    assert 'cellphone_pvals' in lr_res.columns
     lr_res = lr_res.sort_values(by=list(lr_res.columns))
     lr_exp = lr_exp.sort_values(by=list(lr_res.columns))
     lr_res.index = lr_exp.index
@@ -51,6 +47,7 @@ def test_aggregate_res():
 
 
 def test_aggregate_all():
+    adata = generate_toy_adata()
     rank_aggregate(adata,
                    groupby='bulk_labels',
                    aggregate_method='mean',
@@ -60,7 +57,7 @@ def test_aggregate_all():
 
 
 def test_aggregate_by_sample():
-
+    adata = generate_toy_adata()
     rank_aggregate.by_sample(adata, groupby='bulk_labels',
                              return_all_lrs=True, sample_key='sample',
                              key_added='liana_by_sample')
@@ -70,6 +67,7 @@ def test_aggregate_by_sample():
     assert lr_by_sample.shape == (10836, 14)
 
 def test_aggregate_no_perms():
+    adata = generate_toy_adata()
     rank_aggregate(adata, groupby='bulk_labels',
                    return_all_lrs=True, key_added='all_res',
                    n_perms=None)

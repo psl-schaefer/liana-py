@@ -4,11 +4,10 @@ from scanpy.datasets import pbmc68k_reduced
 
 from liana.method._pipe_utils._pre import assert_covered, prep_check_adata
 
-adata = pbmc68k_reduced()
-adata.layers['scaled_counts'] = adata.X
-
 
 def test_prep_check_adata():
+    adata = pbmc68k_reduced()
+
     temp = prep_check_adata(adata=adata, groupby='bulk_labels', min_cells=0,
                             use_raw=True, layer=None)
     np.testing.assert_almost_equal(np.sum(temp.X.data), 319044.22, decimal=2)
@@ -23,11 +22,13 @@ def test_prep_check_adata():
 
 
 def test_check_if_covered():
+    adata = pbmc68k_reduced()
     with pytest.raises(ValueError):
         assert_covered(['NOT', 'HERE'], adata.var_names, verbose=True)
 
 
 def test_choose_mtx():
+    adata = pbmc68k_reduced()
     # check if default is used correctly
     raw_adata = prep_check_adata(adata=adata, groupby='bulk_labels', min_cells=5)
     assert np.min(raw_adata.X.data) < 0
@@ -44,6 +45,8 @@ def test_choose_mtx():
 
 
 def test_choose_mtx_failure():
+    adata = pbmc68k_reduced()
+    adata.layers['scaled_counts'] = adata.X
     # check exception if both layer and use_raw are provided
     with pytest.raises(ValueError):
         prep_check_adata(adata=adata, groupby='bulk_labels', min_cells=5,

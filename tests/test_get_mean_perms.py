@@ -23,7 +23,7 @@ def test_perms():
                              agg_fun=_mean,
                              n_perms=100,
                              seed=1337,
-                             n_jobs=2,
+                             n_jobs=1,
                              verbose=False)
 
     assert perms.shape == (100, 10, 765)

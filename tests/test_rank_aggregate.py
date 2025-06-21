@@ -38,8 +38,9 @@ def test_aggregate_specs():
 
 def test_aggregate_res():
     adata = generate_toy_adata()
-    lr_res = rank_aggregate(adata, groupby='bulk_labels', n_perms=2, inplace=True)
-    adata.uns['liana_res'] = lr_res
+    adata = adata.raw.to_adata()
+    lr_res = rank_aggregate(adata, groupby='bulk_labels', n_perms=2,
+                   use_raw=False, seed=1337, inplace=False)
     lr_exp = read_csv(test_path.joinpath(path.join("data", "aggregate_rank_rest.csv")), index_col=0)
     lr_res = lr_res.sort_values(by=list(lr_res.columns))
     lr_exp = lr_exp.sort_values(by=list(lr_res.columns))
@@ -49,10 +50,14 @@ def test_aggregate_res():
 
 def test_aggregate_all():
     adata = generate_toy_adata()
+    adata = adata.raw.to_adata()
     rank_aggregate(adata,
                    groupby='bulk_labels',
                    aggregate_method='mean',
                    return_all_lrs=True,
+                   use_raw=False,
+                   seed=1,
+                   n_perms=2,
                    key_added='all_res')
     assert adata.uns['all_res'].shape == (4200, 13)
 

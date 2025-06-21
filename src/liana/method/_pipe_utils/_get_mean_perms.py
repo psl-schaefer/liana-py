@@ -64,20 +64,20 @@ def _permute_and_aggregate(perm, perm_idx, X, labels_mask, agg_fun):
 
 
 def _generate_perms_cube(X, n_perms, labels_mask, seed, agg_fun, n_jobs, verbose):
-    # initialize rng
-    rng = np.random.default_rng(seed=seed)
-
     # indexes to be shuffled
     idx = np.arange(X.shape[0])
-
     # Perm should be a cube /w dims: n_perms x idents x n_genes
     perms = np.zeros((n_perms, labels_mask.shape[1], X.shape[1]))
 
     # Use Parallel to enable parallelization
-    results = Parallel(n_jobs=n_jobs)(delayed(_permute_and_aggregate)
-                                      (perm, rng.permutation(idx), X, labels_mask, agg_fun)
-                                      for perm in tqdm(range(n_perms), disable=not verbose)
-                                      )
+    if n_jobs == 1:
+        results = [_permute_and_aggregate(perm, np.random.default_rng(seed=seed + perm).permutation(idx), X, labels_mask, agg_fun)
+                   for perm in tqdm(range(n_perms), disable=not verbose)]
+    else:
+        results = Parallel(n_jobs=n_jobs)(delayed(_permute_and_aggregate)
+                                          (perm, np.random.default_rng(seed=seed + perm).permutation(idx), X, labels_mask, agg_fun)
+                                          for perm in tqdm(range(n_perms), disable=not verbose)
+                                          )
 
     # Unpack results
     for perm, permuted_means in results:

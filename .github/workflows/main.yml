@@ -82,8 +82,9 @@ jobs:
       - name: generate coverage report
         run: uvx hatch run ${{ matrix.env.name }}:coverage xml
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5.4.3
       - name: Print pip freeze
+        if: always()
         run: uvx hatch run ${{ matrix.env.name }}:pip freeze
 
   # Check that all tests defined above pass. This makes it easy to set a single "required" test in branch

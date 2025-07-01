@@ -209,7 +209,7 @@ def liana_pipe(adata: anndata.AnnData,
                     print(f"Running {method.method_name}")
 
                 lrs[method.method_name] = \
-                    _run_method(lr_res=lr_res.copy(),
+                    _run_method(lr_res=lr_res.copy(deep=True),
                                 adata=adata,
                                 expr_prop=expr_prop,
                                 _score=method,
@@ -433,7 +433,6 @@ def _run_method(lr_res: pandas.DataFrame,
                             perm_stats=perm_stats)
     else:  # non-perm funs
         scores = _score.fun(x=lr_res)
-
     lr_res.loc[:, _score.magnitude] = scores[0]
     lr_res.loc[:, _score.specificity] = scores[1]
 

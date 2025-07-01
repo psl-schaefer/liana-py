@@ -209,7 +209,7 @@ def liana_pipe(adata: anndata.AnnData,
                     print(f"Running {method.method_name}")
 
                 lrs[method.method_name] = \
-                    _run_method(lr_res=lr_res.copy(),
+                    _run_method(lr_res=lr_res.copy(deep=True),
                                 adata=adata,
                                 expr_prop=expr_prop,
                                 _score=method,

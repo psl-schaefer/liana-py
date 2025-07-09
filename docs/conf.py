@@ -120,6 +120,9 @@ html_css_files = ["css/custom.css"]
 
 html_title = project_name
 
+html_logo = "_static/logo.png"
+html_favicon = "_static/logo.png"
+
 html_theme_options = {
     "repository_url": repository_url,
     "use_repository_button": True,

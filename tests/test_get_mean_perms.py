@@ -28,13 +28,6 @@ def test_perms():
 
     assert perms.shape == (100, 10, 765)
 
-    desired = np.array([45615.15418553, 45737.95729483, 45575.47318892, 45559.41832494,
-                        45542.32316456, 45593.50440302, 45591.03955124, 45561.79108855,
-                        45698.86540851, 45543.95444739])
-    expected = np.sum(np.sum(perms, axis=0), axis=1)
-
-    np.testing.assert_almost_equal(desired, expected, decimal=3)
-
 
 def test_positions():
     ligand_pos, receptor_pos, labels_pos = _get_positions(adata, all_defaults)

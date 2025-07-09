@@ -135,6 +135,6 @@ def _calculate_pvals(lr_truth, perm_stats, _score_fun):
         n_perms = perm_stats.shape[1]
         pvals = np.sum(np.greater_equal(lr_perm_means, lr_truth), axis=0) / n_perms
     else:
-        pvals = np.ones(lr_truth.shape)
+        pvals = None
 
     return pvals

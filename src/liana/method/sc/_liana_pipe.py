@@ -209,7 +209,7 @@ def liana_pipe(adata: anndata.AnnData,
                     print(f"Running {method.method_name}")
 
                 lrs[method.method_name] = \
-                    _run_method(lr_res=lr_res.copy(deep=True),
+                    _run_method(lr_res=lr_res.copy(),
                                 adata=adata,
                                 expr_prop=expr_prop,
                                 _score=method,
@@ -427,12 +427,12 @@ def _run_method(lr_res: pandas.DataFrame,
             perm_stats = np.stack((ligand_stat_perms, receptor_stat_perms), axis=0)
         else:
             perm_stats = None
-            _score.specificity = None
 
         scores = _score.fun(x=lr_res,
                             perm_stats=perm_stats)
     else:  # non-perm funs
         scores = _score.fun(x=lr_res)
+
     lr_res.loc[:, _score.magnitude] = scores[0]
     lr_res.loc[:, _score.specificity] = scores[1]
 
@@ -455,6 +455,9 @@ def _run_method(lr_res: pandas.DataFrame,
     # remove redundant cols for some scores
     if (_score.magnitude is None) | (_score.specificity is None):
         lr_res = lr_res.drop([None], axis=1)
+    if _score.specificity is not None: # when n_perms is None
+        if lr_res[_score.specificity].isna().all():
+            lr_res = lr_res.drop(_score.specificity, axis=1)
 
     return lr_res
 

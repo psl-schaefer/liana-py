@@ -19,11 +19,11 @@ def _pivot_liana_res(
         target_key: str = 'target',
         score_key: str = 'lr_means',
         mode: Literal['counts', 'mean'] = 'counts') -> pd.DataFrame:
-    if mode not in ['counts', 'mean']:
-        raise ValueError("`pivot_mode` must be 'counts' or 'mean'!")
     if mode == 'counts':
         pivot_table = liana_res.pivot_table(index=source_key, columns=target_key, aggfunc='size', fill_value=0)
     elif mode == 'mean':
+        if score_key is None:
+            raise ValueError("`score_key` must be provided!")
         pivot_table = liana_res.pivot_table(index=source_key, columns=target_key, values=score_key, aggfunc='mean', fill_value=0)
 
     return pivot_table
@@ -155,6 +155,9 @@ def circle_plot(
         The mode of the pivot table, by default 'counts'.
         - 'counts': The number of connections between source and target.
         - 'mean': The mean of the values of `score_key` between source and target cell types (groupby).
+        Note that `filter_fun` differs by pivot_mode: when counts it would remove all interactions
+        that don't pass the filter, while for 'mean' it would retain interactions don't pass the filter
+        if the same interaction passes it for any cell type pair.
     mask_mode : Literal['and', 'or'], optional
         The mode of the mask, by default 'or'.
         - 'or': Include the source or target cell type.
@@ -188,7 +191,14 @@ def circle_plot(
         receptor_complex=receptor_complex,
         uns_key=uns_key)
 
-    liana_res = _filter_by(liana_res, filter_fun)
+    if pivot_mode == 'counts':
+        if filter_fun is not None:
+            mask = liana_res.apply(filter_fun, axis=1).astype(bool)
+            liana_res = liana_res[mask]
+    elif pivot_mode == 'mean':
+        liana_res = _filter_by(liana_res, filter_fun)
+    else:
+        raise ValueError("`pivot_mode` must be 'counts' or 'mean'!")
     liana_res = _get_top_n(liana_res, top_n, orderby, orderby_ascending, orderby_absolute)
 
     if inverse_score:

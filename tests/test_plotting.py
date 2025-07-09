@@ -81,4 +81,7 @@ def test_circle_plot():
     adata.obs['random'] = np.random.choice(unique_sources, size=adata.shape[0], replace=True)
     adata.uns['liana_res'] = liana_res
 
-    circle_plot(adata, groupby='random', liana_res=liana_res)
+    circle_plot(adata, groupby='random', liana_res=liana_res,
+                pivot_mode='mean', score_key='specificity_rank')
+    circle_plot(adata, groupby='random', liana_res=liana_res, pivot_mode='counts',
+                filter_fun=lambda x: x['specificity_rank'] < 0.95)

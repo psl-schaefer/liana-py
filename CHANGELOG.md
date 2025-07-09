@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.6.0 (13.06.2025)
+## 1.6.0 (09.07.2025)
 
 - Adapted and bumped requirements to decopler-py \>=2.0.0 \| PR #178 by
   \@robinfallegger addresses [#179](https://github.com/saezlab/liana-py/issues/179)
@@ -8,6 +8,7 @@
 - Minor adjustment to SpatialDM Global Moran\'s R description [#176](https://github.com/saezlab/liana-py/issues/176)
 - Fix feature name warning logic [#169](https://github.com/saezlab/liana-py/issues/169)
 - Use scverse cookiecutter [#180](https://github.com/saezlab/liana-py/issues/180)
+- Address count issue with circle plot [#185](https://github.com/saezlab/liana-py/issues/185)
 
 ## 1.5.1 (13.02.2025)
 

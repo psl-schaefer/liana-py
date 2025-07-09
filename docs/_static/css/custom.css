@@ -2,3 +2,6 @@
 div.cell_output table.dataframe {
     font-size: 0.8em;
 }
+img[src$=".png"] {
+    background-color: transparent;  /* or use your theme's background */
+}

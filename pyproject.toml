@@ -93,7 +93,7 @@ scripts.clean = "git clean -fdX -- {args:docs}"
 
 [[tool.hatch.envs.hatch-test.matrix]]
 deps = [ "stable" ]
-python = [ "3.10", "3.11" ]
+python = [ "3.10", "3.12" ]
 
 [tool.hatch.envs.hatch-test]
 features = [ "test", "extras" ]

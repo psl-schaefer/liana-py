@@ -54,3 +54,12 @@ Dimitrov D., Schäfer P.S.L, Farr E., Rodriguez Mier P., Lobentanzer S., Badia-i
 Dimitrov, D., Türei, D., Garrido-Rodriguez M., Burmedi P.L., Nagai, J.S., Boys, C., Flores, R.O.R., Kim, H., Szalai, B., Costa, I.G., Valdeolivas, A., Dugourd, A. and Saez-Rodriguez, J. Comparison of methods and resources for cell-cell communication inference from single-cell RNA-Seq data. Nat Commun 13, 3224 (2022). https://doi.org/10.1038/s41467-022-30755-0
 
 Please also consider citing any of the methods and/or resources that were particularly relevant for your research!
+
+[uv]: https://github.com/astral-sh/uv
+[scverse discourse]: https://discourse.scverse.org/
+[issue tracker]: https://github.com/saezlab/liana-py/issues
+[tests]: https://github.com/dbdimitrov/liana-py/actions/workflows/test.yaml
+[documentation]: https://liana-py.readthedocs.io
+[changelog]: https://liana-py.readthedocs.io/en/latest/release_notes.html
+[api documentation]: https://liana-py.readthedocs.io/en/latest/api.html
+[pypi]: https://pypi.org/project/liana

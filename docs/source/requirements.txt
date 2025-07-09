@@ -1,7 +1,0 @@
-docrep
-furo
-ipykernel
-ipython
-nbsphinx
-numpydoc
-pandoc

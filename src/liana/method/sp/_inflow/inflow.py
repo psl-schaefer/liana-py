@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import Optional, Callable
+
+from collections.abc import Callable
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -7,11 +9,12 @@ import scanpy as sc
 from anndata import AnnData
 from scipy.sparse import csr_matrix
 
+from liana._constants import DefaultValues as V
+from liana._constants import Keys as K
+from liana._docs import d
+from liana.method._pipe_utils import assert_covered, prep_check_adata
 from liana.method._pipe_utils._common import _get_props
 from liana.method.sp._utils import _add_complexes_to_var, _rename_means
-from liana.method._pipe_utils import assert_covered, prep_check_adata
-from liana._constants import Keys as K, DefaultValues as V
-from liana._docs import d
 from liana.resource.select_resource import _handle_resource
 
 
@@ -39,12 +42,12 @@ class SpatialInflow:
         resource_name: str = None,
         nz_prop: float = 0.001,
         connectivity_key: str = K.connectivity_key,
-        resource: Optional[pd.DataFrame] = V.resource,
-        interactions: Optional[list] = V.interactions,
-        complex_sep: Optional[str, None] = "_",
-        transform: Optional[Callable] = None,
-        use_raw: Optional[bool, None] = V.use_raw,
-        layer: Optional[str, None] = V.layer,
+        resource: pd.DataFrame | None = V.resource,
+        interactions: list | None = V.interactions,
+        complex_sep: str | None = "_",
+        transform: Callable | None = None,
+        use_raw: bool | None = V.use_raw,
+        layer: str | None = V.layer,
         xy_sep: str = V.lr_sep,
         verbose: bool = V.verbose,
         **kwargs,
@@ -54,7 +57,6 @@ class SpatialInflow:
 
         Parameters
         ----------
-
         %(adata)s
         %(interactions)s
         %(resource)s
@@ -85,7 +87,6 @@ class SpatialInflow:
         l and r are respectively the ligand and receptors expressed in the data and covered in the resource, and n is the
         number of observations.
         """
-
         # NOTE There are some repetitiions with bivariate scores
         # one could define a shared class to process adata, and split the two thereafter
         resource = _handle_resource(
@@ -112,22 +113,17 @@ class SpatialInflow:
         if complex_sep is not None:
             adata = _add_complexes_to_var(
                 adata,
-                np.union1d(
-                    resource[self.x_name].astype(str), resource[self.y_name].astype(str)
-                ),
+                np.union1d(resource[self.x_name].astype(str), resource[self.y_name].astype(str)),
                 complex_sep=complex_sep,
             )
 
         # Filter the resource to keep only rows where both ligand & receptor are in adata.var_names
         resource = resource[
-            (resource[self.x_name].isin(adata.var_names))
-            & (resource[self.y_name].isin(adata.var_names))
+            (resource[self.x_name].isin(adata.var_names)) & (resource[self.y_name].isin(adata.var_names))
         ]
 
         # Make sure all LR features appear in adata.var
-        entities = np.union1d(
-            resource[self.x_name].unique(), resource[self.y_name].unique()
-        )
+        entities = np.union1d(resource[self.x_name].unique(), resource[self.y_name].unique())
         assert_covered(entities, adata.var_names, verbose=verbose)
 
         # Subset adata to only the relevant (ligand + receptor) features
@@ -152,8 +148,7 @@ class SpatialInflow:
 
         # Filter by non-zero proportion
         xy_stats = xy_stats[
-            (xy_stats[f"{self.x_name}_props"] >= nz_prop)
-            & (xy_stats[f"{self.y_name}_props"] >= nz_prop)
+            (xy_stats[f"{self.x_name}_props"] >= nz_prop) & (xy_stats[f"{self.y_name}_props"] >= nz_prop)
         ]
         if xy_stats.empty:
             raise ValueError("No features passed the non-zero proportion filter.")
@@ -166,11 +161,9 @@ class SpatialInflow:
         y_mat = adata[:, xy_stats[self.y_name]].X  # receptor expression
 
         # Grab the spatial connectivity matrix
-        if "spatial_connectivities" not in adata.obsp:
-            raise ValueError(
-                "`adata.obsp` must contain 'spatial_connectivities' for weighting."
-            )
-        w = adata.obsp["spatial_connectivities"]
+        if connectivity_key not in adata.obsp:
+            raise ValueError(f"`adata.obsp` must contain '{connectivity_key}' for weighting.")
+        w = adata.obsp[connectivity_key]
 
         k = ct.shape[1]  # number of cell types
         m = x_mat.shape[1]  # number of LR pairs
@@ -194,9 +187,7 @@ class SpatialInflow:
         # Create .var index: each column is "cell_type ^ interaction_name"
         var = pd.DataFrame(
             index=(
-                np.repeat(celltypes.columns.astype(str), m)
-                + xy_sep
-                + np.tile(xy_stats["interaction"].astype(str), k)
+                np.repeat(celltypes.columns.astype(str), m) + xy_sep + np.tile(xy_stats["interaction"].astype(str), k)
             )
         )
 
@@ -224,16 +215,19 @@ class SpatialInflow:
         values = t.T @ lrdata.X  # k x (s*l*r); i.e. we sum over n
         values = values.flatten()
 
-        res = pd.DataFrame(
+        global_res = pd.DataFrame(
             {
-                "name": np.tile(interaction_names, k)
-                + xy_sep
-                + np.repeat(celltype_names, interaction_names.shape[0]),
-                "value": values,
+                "interaction": np.tile(interaction_names, k) + xy_sep + np.repeat(celltype_names, interaction_names.shape[0]),
+                "score": values,
             }
         )
 
-        return res, lrdata
+        global_res = global_res.rename(columns={"name": "interaction", "value": "score"})
+        global_res[["source", "ligand", "receptor", "receiver"]] = (
+            global_res["interaction"].str.split("^", expand=True)
+        )
+
+        return global_res, lrdata
 
     def _transform(self, mat, transform=None, **kwargs):
         if transform is not None:
@@ -243,9 +237,7 @@ class SpatialInflow:
         elif isinstance(mat, np.ndarray):
             return mat
         else:
-            raise TypeError(
-                f"Unsupported matrix type: {type(mat)}. Expected np.ndarray or csr_matrix."
-            )
+            raise TypeError(f"Unsupported matrix type: {type(mat)}. Expected np.ndarray or csr_matrix.")
 
 
 inflow = SpatialInflow()

@@ -1,63 +1,181 @@
-[tool.poetry]
-name = "liana"
-version = "1.4.0"
-description = "LIANA+: a one-stop-shop framework for cell-cell communication"
-authors = ["Daniel Dimitrov <daniel.dimitrov@uni-heidelberg.de>"]
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Topic :: Software Development :: Build Tools",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Scientific/Engineering :: Bio-Informatics",
-    "Intended Audience :: Science/Research",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python",
-    "Natural Language :: English",
-]
-license = "GPLv3"
-readme = "README.md"
-repository = "https://github.com/saezlab/liana-py"
-homepage = "https://liana-py.readthedocs.io"
-include = ["LICENSE"]
-
-[tool.poetry.dependencies]
-python = ">=3.8 <3.12"
-anndata = ">=0.7.4"
-mudata = "*"
-scanpy = ">=1.8.0"
-numba = ">=0.54.0"
-plotnine = ">=0.10.0"
-tqdm = "^4.0"
-omnipath = {version = ">=1.0.6", optional = true}
-decoupler = {version = ">=1.4.0", optional = true}
-pydeseq2 = {version = ">=0.3.5", optional = true}
-cell2cell = {version = "*", optional = true}
-muon = {version = "*", optional = true}
-mofax = {version = "*", optional = true}
-mofapy2 = {version = ">=0.7.0", optional = true}
-corneto = {version = "0.9.1-alpha.5", optional = true}
-cvxpy = {version = ">=1.4,<1.5.0", optional = true}
-cylp = {version = "^0.91.5", optional = true}
-pre-commit = {version = ">=3.0.0", optional = true}
-requests = {version = "^2.25.1", optional = true}
-docrep = ">=0.3.1"
-
-[tool.poetry.dev-dependencies]
-pytest = ">=6.0"
-pytest-cov = "*"
-flake8 = "*"
-sphinx = "^4.0"
-nbsphinx = "^0.8"
-sphinx_automodapi = "^0.14"
-ipython = "^7.0"
-ipykernel = "^6.0"
-pandoc = "^1.0"
-numpydoc = "^1.1"
-bumpversion = "^0.6.0"
-
-[tool.poetry.extras]
-common = ["decoupler", "omnipath", "requests"]
-full = ["decoupler", "omnipath", "pydeseq2", "cell2cell", "muon", "mofax", "mofapy2", "corneto", "cvxpy", "cylp", "requests"]
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+build-backend = "hatchling.build"
+requires = [ "hatchling" ]
+
+[project]
+name = "liana"
+version = "1.6.0"
+description = "LIANA+: a one-stop-shop framework for cell-cell communication"
+readme = "README.md"
+license = { file = "LICENSE" }
+maintainers = [
+  { name = "Daniel Dimitrov", email = "daniel.dimitrov@embl.de" },
+]
+authors = [
+  { name = "Daniel Dimitrov" },
+  { name = "Philipp Sven Lars Schäfer"},
+  { name = "Elias Farr"},
+  { name = "Pablo Rodriguez-Mier"},
+  { name = "Sebastian Lobentanzer"},
+  { name = "Pau Badia-i-Mompel"},
+  { name = "Aurelien Dugourd"},
+  { name = "Jovan Tanevski"},
+  { name = "Ricardo Omar Ramirez Flores"},
+  { name = "Julio Saez-Rodriguez"},
+
+]
+requires-python = ">=3.10,<3.13"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+  "anndata>=0.7.4",
+  "mudata",
+  "scanpy",
+  "numba",
+  "tqdm>=4.0",
+  "docrep>=0.3.1",
+  "plotnine>=0.10.1",
+  "session-info2",
+  "pandas",
+]
+
+optional-dependencies.dev = [
+  "pre-commit>=3.0.0",
+  "twine>=4.0.2",
+  "pytest>=8.0",
+  "bumpversion>=0.6.0",
+  "highspy>=1.9.0",
+]
+
+optional-dependencies.extras = [
+  "decoupler>=1.6.0",
+  "omnipath>=1.0.6",
+  "pydeseq2>=0.3.5",
+  "cell2cell",
+  "kneed>=0.7.0",
+  "muon",
+  "mofax",
+  "mofapy2>=0.7.0",
+  "requests>=2.25.1",
+  "corneto==0.9.1-alpha.6",
+  "cvxpy-base>=1.6.0",
+  "PySCIPOpt>=5.2.1",
+]
+
+optional-dependencies.doc = [
+  "docutils>=0.8,!=0.18.*,!=0.19.*",
+  "ipykernel",
+  "ipython",
+  "myst-nb>=1.1",
+  "setuptools",
+  "sphinx>=8.1",
+  "sphinx-autodoc-typehints",
+  "sphinx-book-theme>=1",
+  "sphinx-copybutton",
+  "sphinx-tabs",
+  "sphinxcontrib-bibtex>=1",
+  "sphinxext-opengraph",
+  "pre-commit",
+]
+
+optional-dependencies.test = [
+  "coverage",
+  "pytest",
+]
+
+urls.Documentation = "https://liana.readthedocs.io/"
+urls.Homepage = "https://liana-py.readthedocs.io"
+urls.Source = "https://github.com/saezlab/liana-py"
+
+[tool.hatch.envs.default]
+installer = "uv"
+features = [ "dev" ]
+
+[tool.hatch.envs.docs]
+features = [ "doc" ]
+scripts.build = "sphinx-build -M html docs docs/_build -W {args}"
+scripts.open = "python -m webbrowser -t docs/_build/html/index.html"
+scripts.clean = "git clean -fdX -- {args:docs}"
+
+[[tool.hatch.envs.hatch-test.matrix]]
+deps = [ "stable" ]
+python = [ "3.10", "3.12" ]
+
+[tool.hatch.envs.hatch-test]
+features = [ "test", "extras" ]
+
+[tool.hatch.envs.hatch-test.overrides]
+# If the matrix variable `deps` is set to "pre",
+# set the environment variable `UV_PRERELEASE` to "allow".
+matrix.deps.env-vars = [
+  { key = "UV_PRERELEASE", value = "allow", if = [ "pre" ] },
+]
+
+[tool.ruff]
+line-length = 120
+src = [ "src" ]
+extend-include = [ "*.ipynb" ]
+
+lint.select = [
+  "B",      # flake8-bugbear
+  "BLE",    # flake8-blind-except
+  "C4",     # flake8-comprehensions
+  "D",      # pydocstyle
+  "E",      # Error detected by Pycodestyle
+  "F",      # Errors detected by Pyflakes
+  "I",      # isort
+  "RUF100", # Report unused noqa directives
+  "TID",    # flake8-tidy-imports
+  "UP",     # pyupgrade
+  "W",      # Warning detected by Pycodestyle
+]
+
+lint.ignore = [
+  "B008", # Errors from function calls in argument defaults. These are fine when the result is immutable.
+  "D100", # Missing docstring in public module
+  "D104", # Missing docstring in public package
+  "D105", # __magic__ methods are often self-explanatory, allow missing docstrings
+  "D107", # Missing docstring in __init__
+  # Disable one in each pair of mutually incompatible rules
+  "D203", # We don’t want a blank line before a class docstring
+  "D213", # <> We want docstrings to start immediately after the opening triple quote
+  "D400", # first line should end with a period [Bug: doesn’t work with single-line docstrings]
+  "D401", # First line should be in imperative mood; try rephrasing
+  "E501", # line too long -> we accept long comment lines; formatter gets rid of long code lines
+  "E731", # Do not assign a lambda expression, use a def -> lambda expression assignments are convenient
+  "E741", # allow I, O, l as variable names -> I is the identity matrix
+]
+
+lint.per-file-ignores."*/__init__.py" = [ "F401" ]
+lint.per-file-ignores."docs/*" = [ "I" ]
+lint.per-file-ignores."tests/*" = [ "D" ]
+lint.pydocstyle.convention = "numpy"
+
+[tool.pytest.ini_options]
+testpaths = [ "tests" ]
+xfail_strict = true
+addopts = [
+  "--import-mode=importlib", # allow using test files with same name
+]
+
+[tool.coverage.run]
+source = [ "liana" ]
+omit = [
+  "**/test_*.py",
+]
+
+[tool.cruft]
+skip = [
+  "tests",
+  "src/**/__init__.py",
+  "src/**/basic.py",
+  "docs/api.md",
+  "docs/changelog.md",
+  "docs/references.bib",
+  "docs/references.md",
+  "docs/notebooks/example.ipynb",
+]

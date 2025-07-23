@@ -29,6 +29,9 @@ MANIFEST
 .idea/
 .vscode/
 data/
+docs/_build/*
+docs/jupyter_execute/*
+docs/generated/*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

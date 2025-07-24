@@ -179,7 +179,7 @@ class SpatialInflow:
         # Min-max transform the ligand * celltype data & apply spatial weighting
         ls = self._transform(ls, transform, **kwargs)
         wls = w.dot(csr_matrix(ls)).toarray()
-        wls /= w.sum(axis=1)  # normalize by row sum
+        wls /= w.sum(axis=1) + 1e-9 # normalize by row sum
         wls[np.isnan(wls)] = 0
         r = self._transform(y_mat, transform, **kwargs)
         ri = np.tile(r, k)  # shape (n_cells, n_LRs * n_ct)

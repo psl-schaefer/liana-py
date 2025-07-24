@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -14,7 +13,7 @@ from liana._constants import Keys as K
 from liana._docs import d
 from liana.method._pipe_utils import assert_covered, prep_check_adata
 from liana.method._pipe_utils._common import _get_props
-from liana.method.sp._utils import _add_complexes_to_var, _rename_means
+from liana.method.sp._utils import _add_complexes_to_var
 from liana.resource.select_resource import _handle_resource
 
 
@@ -142,8 +141,10 @@ class SpatialInflow:
         )
 
         # Merge these stats into the resource
-        xy_stats = resource.merge(_rename_means(xy_stats, entity=self.x_name)).merge(
-            _rename_means(xy_stats, entity=self.y_name)
+        xy_stats = (
+            resource
+            .merge(self._rename_means(xy_stats, entity=self.x_name))
+            .merge(self._rename_means(xy_stats, entity=self.y_name))
         )
 
         # Filter by non-zero proportion
@@ -228,6 +229,11 @@ class SpatialInflow:
         )
 
         return global_res, lrdata
+
+    def _rename_means(self, lr_stats, entity):
+        df = lr_stats.copy()
+        df.columns = df.columns.map(lambda x: entity + '_' + str(x) if x != 'gene' else 'gene')
+        return df.rename(columns={'gene': entity})
 
     def _transform(self, mat, transform=None, **kwargs):
         if transform is not None:
